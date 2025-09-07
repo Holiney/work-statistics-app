@@ -1,0 +1,50 @@
+{
+  "name": "Статистика роботи",
+  "short_name": "WorkStats",
+  "description": "Збір даних по персоналу, транспорту та канцелярії",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f9fafb",
+  "theme_color": "#3b82f6",
+  "orientation": "portrait",
+  "categories": ["business", "productivity"],
+  "lang": "uk",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/pwa-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/pwa-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Персонал",
+      "short_name": "Персонал",
+      "description": "Облік персоналу та автомобілів",
+      "url": "/?task=task1",
+      "icons": [{"src": "/pwa-192.png", "sizes": "192x192"}]
+    },
+    {
+      "name": "Велосипеди",
+      "short_name": "Велосипеди", 
+      "description": "Облік велосипедів та транспорту",
+      "url": "/?task=task2",
+      "icons": [{"src": "/pwa-192.png", "sizes": "192x192"}]
+    },
+    {
+      "name": "Канцелярія",
+      "short_name": "Канцелярія",
+      "description": "Облік канцелярських товарів", 
+      "url": "/?task=task3",
+      "icons": [{"src": "/pwa-192.png", "sizes": "192x192"}]
+    }
+  ]
+}

@@ -55,6 +55,32 @@ const PRINT_ITEMS = [
 
 const PRINT_ROOMS = ["50", "140", "162", "220", "250", "340", "422", "463"];
 
+// Vibration patterns
+const VIBRATION_PATTERNS = {
+  light: [25],
+  medium: [50],
+  strong: [100],
+  double: [50, 50, 50],
+  success: [100, 50, 100],
+  error: [200, 100, 200],
+  buttonPress: [30],
+  counterIncrease: [50],
+  counterDecrease: [25],
+  save: [100, 50, 100, 50, 100],
+  delete: [200, 100, 200],
+};
+
+// Vibration helper function
+const vibrateDevice = (pattern) => {
+  if ("vibrate" in navigator) {
+    if (typeof pattern === "string" && VIBRATION_PATTERNS[pattern]) {
+      navigator.vibrate(VIBRATION_PATTERNS[pattern]);
+    } else if (Array.isArray(pattern) || typeof pattern === "number") {
+      navigator.vibrate(pattern);
+    }
+  }
+};
+
 // Storage helpers
 const loadFromStorage = (key, defaultValue) => {
   try {
@@ -71,22 +97,6 @@ const saveToStorage = (key, value) => {
     localStorage.setItem(key, JSON.stringify(value));
   } catch (e) {
     console.error("Error saving to storage:", e);
-  }
-};
-
-const getSavedStatus = (key) => {
-  try {
-    return localStorage.getItem(key) === "true";
-  } catch {
-    return false;
-  }
-};
-
-const setSavedStatus = (key, status) => {
-  try {
-    localStorage.setItem(key, status);
-  } catch (e) {
-    console.error("Error setting saved status:", e);
   }
 };
 
@@ -135,8 +145,94 @@ const getDataForDate = (date, task) => {
   return data;
 };
 
-// Toast Component
+// PWA Install Banner Component
+const PWAInstallBanner = () => {
+  const [showInstallBanner, setShowInstallBanner] = useState(false);
+  const [isInstalled, setIsInstalled] = useState(false);
+
+  useEffect(() => {
+    // Check if already installed
+    const isStandalone =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      window.navigator.standalone === true;
+
+    if (isStandalone) {
+      setIsInstalled(true);
+      return;
+    }
+
+    // Listen for install prompt
+    const handleInstallPrompt = () => {
+      setShowInstallBanner(true);
+    };
+
+    const handleInstalled = () => {
+      setIsInstalled(true);
+      setShowInstallBanner(false);
+      vibrateDevice("success");
+    };
+
+    window.addEventListener("pwa-install-available", handleInstallPrompt);
+    window.addEventListener("pwa-installed", handleInstalled);
+
+    return () => {
+      window.removeEventListener("pwa-install-available", handleInstallPrompt);
+      window.removeEventListener("pwa-installed", handleInstalled);
+    };
+  }, []);
+
+  const handleInstall = () => {
+    vibrateDevice("buttonPress");
+    if (window.installPWA) {
+      window.installPWA();
+    }
+    setShowInstallBanner(false);
+  };
+
+  const handleDismiss = () => {
+    vibrateDevice("buttonPress");
+    setShowInstallBanner(false);
+  };
+
+  if (!showInstallBanner || isInstalled) return null;
+
+  return (
+    <div className="fixed top-4 left-4 right-4 z-50 bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 rounded-xl shadow-lg">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <span className="text-2xl">📱</span>
+          <div>
+            <h3 className="font-semibold">Встановити додаток</h3>
+            <p className="text-sm opacity-90">Для кращого досвіду роботи</p>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={handleInstall}
+            className="px-4 py-2 bg-white text-blue-600 rounded-lg font-semibold text-sm hover:bg-gray-100 transition"
+          >
+            Встановити
+          </button>
+          <button
+            onClick={handleDismiss}
+            className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition"
+          >
+            ✕
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Toast Component with Vibration
 const Toast = ({ message, isVisible, onClose, type = "success" }) => {
+  useEffect(() => {
+    if (isVisible) {
+      vibrateDevice(type === "success" ? "success" : "error");
+    }
+  }, [isVisible, type]);
+
   if (!isVisible) return null;
 
   const bgColor = type === "success" ? "bg-green-500" : "bg-red-500";
@@ -144,14 +240,17 @@ const Toast = ({ message, isVisible, onClose, type = "success" }) => {
 
   return (
     <div
-      className={`fixed top-4 left-4 right-4 z-50 ${bgColor} text-white px-4 py-3 rounded-xl shadow-lg`}
+      className={`fixed top-4 left-4 right-4 z-40 ${bgColor} text-white px-4 py-3 rounded-xl shadow-lg`}
     >
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium">
           {emoji} {message}
         </span>
         <button
-          onClick={onClose}
+          onClick={() => {
+            vibrateDevice("buttonPress");
+            onClose();
+          }}
           className="ml-3 p-1 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors"
         >
           ✕
@@ -161,13 +260,25 @@ const Toast = ({ message, isVisible, onClose, type = "success" }) => {
   );
 };
 
-// Bottom Sheet
+// Bottom Sheet with Vibration
 const BottomSheet = ({ isOpen, onClose, title, children }) => {
+  useEffect(() => {
+    if (isOpen) {
+      vibrateDevice("light");
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50">
-      <div className="fixed inset-0 bg-black bg-opacity-30" onClick={onClose} />
+      <div
+        className="fixed inset-0 bg-black bg-opacity-30"
+        onClick={() => {
+          vibrateDevice("buttonPress");
+          onClose();
+        }}
+      />
       <div className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex justify-center py-3">
           <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
@@ -175,7 +286,10 @@ const BottomSheet = ({ isOpen, onClose, title, children }) => {
         <div className="flex items-center justify-between px-6 pb-4">
           <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
           <button
-            onClick={onClose}
+            onClick={() => {
+              vibrateDevice("buttonPress");
+              onClose();
+            }}
             className="p-2 hover:bg-gray-100 rounded-xl transition text-2xl"
           >
             ✕
@@ -187,18 +301,18 @@ const BottomSheet = ({ isOpen, onClose, title, children }) => {
   );
 };
 
-// Counter Component
+// Enhanced Counter Component with Vibration
 const Counter = ({ value, onChange, label }) => {
   const handleIncrease = () => {
     if (value < 999) {
-      if (navigator.vibrate) navigator.vibrate([50]);
+      vibrateDevice("counterIncrease");
       onChange(value + 1);
     }
   };
 
   const handleDecrease = () => {
     if (value > 0) {
-      if (navigator.vibrate) navigator.vibrate([25]);
+      vibrateDevice("counterDecrease");
       onChange(value - 1);
     }
   };
@@ -215,14 +329,14 @@ const Counter = ({ value, onChange, label }) => {
       <div className="space-y-4">
         <button
           onClick={handleIncrease}
-          className="w-full h-20 bg-green-500 hover:bg-green-600 text-white rounded-xl shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold text-lg flex items-center justify-center gap-2"
+          className="w-full h-20 bg-green-500 hover:bg-green-600 active:bg-green-700 text-white rounded-xl shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold text-lg flex items-center justify-center gap-2"
         >
           <span className="text-2xl">➕</span>
           Додати
         </button>
         <button
           onClick={handleDecrease}
-          className="w-full h-16 bg-red-500 hover:bg-red-600 text-white rounded-xl shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold flex items-center justify-center gap-2"
+          className="w-full h-16 bg-red-500 hover:bg-red-600 active:bg-red-700 text-white rounded-xl shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold flex items-center justify-center gap-2"
         >
           <span className="text-xl">➖</span>
           Відняти
@@ -232,7 +346,7 @@ const Counter = ({ value, onChange, label }) => {
   );
 };
 
-// Number Grid Component
+// Enhanced Number Grid Component with Vibration
 const NumberGrid = ({ value, onChange, label, onClose }) => {
   return (
     <div className="flex flex-col">
@@ -248,14 +362,14 @@ const NumberGrid = ({ value, onChange, label, onClose }) => {
           <button
             key={i}
             onClick={() => {
-              if (navigator.vibrate) navigator.vibrate([25]);
+              vibrateDevice("buttonPress");
               onChange(i);
               onClose();
             }}
             className={`h-12 text-sm font-bold rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
               value === i
                 ? "bg-purple-600 text-white"
-                : "bg-white text-gray-700 border hover:bg-purple-50"
+                : "bg-white text-gray-700 border hover:bg-purple-50 active:bg-purple-100"
             }`}
           >
             {i}
@@ -266,7 +380,7 @@ const NumberGrid = ({ value, onChange, label, onClose }) => {
   );
 };
 
-// Task 1: Personnel & Cars
+// Enhanced Task 1: Personnel & Cars with Vibration
 const Task1PersonnelCars = ({ onSubmit, isSubmitting, status }) => {
   const [personnelData, setPersonnelData] = useState({});
   const [carsCount, setCarsCount] = useState(0);
@@ -289,7 +403,6 @@ const Task1PersonnelCars = ({ onSubmit, isSubmitting, status }) => {
     setPersonnelData(savedPersonnel);
     setCarsCount(savedCars);
 
-    // Перевіряємо чи є збережені дані
     const hasData =
       Object.values(savedPersonnel).some((count) => count > 0) || savedCars > 0;
     setIsSaved(hasData);
@@ -322,11 +435,13 @@ const Task1PersonnelCars = ({ onSubmit, isSubmitting, status }) => {
     saveToStorage(`task1-cars-data-${todayKey}`, carsCount);
 
     setIsSaved(true);
+    vibrateDevice("save");
     showToast("Дані збережено в історію!");
   };
 
   const handleEdit = () => {
     setIsSaved(false);
+    vibrateDevice("light");
     showToast("Режим редагування активовано");
   };
 
@@ -344,6 +459,7 @@ const Task1PersonnelCars = ({ onSubmit, isSubmitting, status }) => {
       showToast("Введіть хоча б одне значення", "error");
       return;
     }
+    vibrateDevice("medium");
     onSubmit({
       task: "Task 1",
       date: new Date().toISOString().slice(0, 16),
@@ -369,12 +485,17 @@ const Task1PersonnelCars = ({ onSubmit, isSubmitting, status }) => {
           {PERSONNEL_ZONES.map((zone) => (
             <button
               key={zone}
-              onClick={() => !isSaved && setSelectedZone(zone)}
+              onClick={() => {
+                if (!isSaved) {
+                  vibrateDevice("buttonPress");
+                  setSelectedZone(zone);
+                }
+              }}
               disabled={isSaved}
               className={`w-full rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform flex items-center justify-between ${
                 isSaved
                   ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                  : "bg-blue-50 hover:bg-blue-100 text-blue-800"
+                  : "bg-blue-50 hover:bg-blue-100 active:bg-blue-200 text-blue-800"
               }`}
             >
               <span className="font-medium">{zone}</span>
@@ -398,12 +519,17 @@ const Task1PersonnelCars = ({ onSubmit, isSubmitting, status }) => {
           Автомобілі
         </h2>
         <button
-          onClick={() => !isSaved && setSelectedZone("Parking")}
+          onClick={() => {
+            if (!isSaved) {
+              vibrateDevice("buttonPress");
+              setSelectedZone("Parking");
+            }
+          }}
           disabled={isSaved}
           className={`w-full rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform flex items-center justify-between ${
             isSaved
               ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-              : "bg-green-50 hover:bg-green-100 text-green-800"
+              : "bg-green-50 hover:bg-green-100 active:bg-green-200 text-green-800"
           }`}
         >
           <span className="font-medium">Всього автомобілів</span>
@@ -421,7 +547,7 @@ const Task1PersonnelCars = ({ onSubmit, isSubmitting, status }) => {
         {!isSaved ? (
           <button
             onClick={handleSave}
-            className="w-full bg-green-500 hover:bg-green-600 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold flex items-center justify-center gap-2"
+            className="w-full bg-green-500 hover:bg-green-600 active:bg-green-700 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold flex items-center justify-center gap-2"
           >
             <span className="text-xl">💾</span>
             Зберегти
@@ -436,7 +562,7 @@ const Task1PersonnelCars = ({ onSubmit, isSubmitting, status }) => {
             </div>
             <button
               onClick={handleEdit}
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold flex items-center justify-center gap-2"
+              className="w-full bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold flex items-center justify-center gap-2"
             >
               <span className="text-xl">✏️</span>
               Редагувати
@@ -447,7 +573,7 @@ const Task1PersonnelCars = ({ onSubmit, isSubmitting, status }) => {
         <button
           onClick={handleSubmit}
           disabled={isSubmitting}
-          className="w-full bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
+          className="w-full bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
         >
           <span className="text-xl">📤</span>
           {isSubmitting ? "Надсилання..." : "Надіслати"}
@@ -493,7 +619,7 @@ const Task1PersonnelCars = ({ onSubmit, isSubmitting, status }) => {
   );
 };
 
-// Task 2: Bike Parking
+// Enhanced Task 2: Bike Parking with Vibration
 const Task2BikeParking = ({ onSubmit, isSubmitting, status }) => {
   const [bikeData, setBikeData] = useState({});
   const [selectedBikeType, setSelectedBikeType] = useState(null);
@@ -510,7 +636,6 @@ const Task2BikeParking = ({ onSubmit, isSubmitting, status }) => {
 
     setBikeData(savedBikes);
 
-    // Перевіряємо чи є збережені дані
     const hasData = Object.values(savedBikes).some((count) => count > 0);
     setIsSaved(hasData);
   }, []);
@@ -540,11 +665,13 @@ const Task2BikeParking = ({ onSubmit, isSubmitting, status }) => {
     saveToStorage(`task2-bikes-data-${todayKey}`, bikeData);
 
     setIsSaved(true);
+    vibrateDevice("save");
     showToast("Дані збережено в історію!");
   };
 
   const handleEdit = () => {
     setIsSaved(false);
+    vibrateDevice("light");
     showToast("Режим редагування активовано");
   };
 
@@ -559,6 +686,7 @@ const Task2BikeParking = ({ onSubmit, isSubmitting, status }) => {
       showToast("Введіть хоча б одне значення", "error");
       return;
     }
+    vibrateDevice("medium");
     onSubmit({
       task: "Task 2",
       date: new Date().toISOString().slice(0, 16),
@@ -584,12 +712,17 @@ const Task2BikeParking = ({ onSubmit, isSubmitting, status }) => {
           {BIKE_TYPES.map((type) => (
             <button
               key={type}
-              onClick={() => !isSaved && setSelectedBikeType(type)}
+              onClick={() => {
+                if (!isSaved) {
+                  vibrateDevice("buttonPress");
+                  setSelectedBikeType(type);
+                }
+              }}
               disabled={isSaved}
               className={`w-full rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform flex items-center justify-between ${
                 isSaved
                   ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                  : "bg-orange-50 hover:bg-orange-100 text-orange-800"
+                  : "bg-orange-50 hover:bg-orange-100 active:bg-orange-200 text-orange-800"
               }`}
             >
               <span className="font-medium text-left">{type}</span>
@@ -611,7 +744,7 @@ const Task2BikeParking = ({ onSubmit, isSubmitting, status }) => {
         {!isSaved ? (
           <button
             onClick={handleSave}
-            className="w-full bg-green-500 hover:bg-green-600 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold flex items-center justify-center gap-2"
+            className="w-full bg-green-500 hover:bg-green-600 active:bg-green-700 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold flex items-center justify-center gap-2"
           >
             <span className="text-xl">💾</span>
             Зберегти
@@ -626,7 +759,7 @@ const Task2BikeParking = ({ onSubmit, isSubmitting, status }) => {
             </div>
             <button
               onClick={handleEdit}
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold flex items-center justify-center gap-2"
+              className="w-full bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold flex items-center justify-center gap-2"
             >
               <span className="text-xl">✏️</span>
               Редагувати
@@ -637,7 +770,7 @@ const Task2BikeParking = ({ onSubmit, isSubmitting, status }) => {
         <button
           onClick={handleSubmit}
           disabled={isSubmitting}
-          className="w-full bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
+          className="w-full bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
         >
           <span className="text-xl">📤</span>
           {isSubmitting ? "Надсилання..." : "Надіслати"}
@@ -677,6 +810,7 @@ const Task2BikeParking = ({ onSubmit, isSubmitting, status }) => {
   );
 };
 
+// Enhanced Task 3: Print Rooms with Vibration
 const Task3PrintRooms = ({ onSubmit, isSubmitting, status }) => {
   const [selectedRoom, setSelectedRoom] = useState(PRINT_ROOMS[0]);
   const [printData, setPrintData] = useState({});
@@ -724,11 +858,13 @@ const Task3PrintRooms = ({ onSubmit, isSubmitting, status }) => {
     const todayKey = getTodayKey();
     saveToStorage(`task3-data-${todayKey}-${selectedRoom}`, printData);
     setIsSaved(true);
+    vibrateDevice("save");
     showToast("Дані збережено в історію!");
   };
 
   const handleEdit = () => {
     setIsSaved(false);
+    vibrateDevice("light");
     showToast("Режим редагування активовано");
   };
 
@@ -743,6 +879,7 @@ const Task3PrintRooms = ({ onSubmit, isSubmitting, status }) => {
       showToast("Введіть хоча б одне значення", "error");
       return;
     }
+    vibrateDevice("medium");
     onSubmit({
       task: "Task 3",
       zone: selectedRoom,
@@ -770,11 +907,14 @@ const Task3PrintRooms = ({ onSubmit, isSubmitting, status }) => {
           {PRINT_ROOMS.map((room) => (
             <button
               key={room}
-              onClick={() => setSelectedRoom(room)}
+              onClick={() => {
+                vibrateDevice("buttonPress");
+                setSelectedRoom(room);
+              }}
               className={`py-2 px-3 text-sm font-bold rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
                 selectedRoom === room
                   ? "bg-purple-600 text-white"
-                  : "bg-white text-gray-700 border hover:bg-purple-50"
+                  : "bg-white text-gray-700 border hover:bg-purple-50 active:bg-purple-100"
               }`}
             >
               {room}
@@ -786,12 +926,17 @@ const Task3PrintRooms = ({ onSubmit, isSubmitting, status }) => {
           {PRINT_ITEMS.map((item) => (
             <button
               key={item}
-              onClick={() => !isSaved && setSelectedItem(item)}
+              onClick={() => {
+                if (!isSaved) {
+                  vibrateDevice("buttonPress");
+                  setSelectedItem(item);
+                }
+              }}
               disabled={isSaved}
               className={`w-full rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform flex items-center justify-between ${
                 isSaved
                   ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                  : "bg-purple-50 hover:bg-purple-100 text-purple-800"
+                  : "bg-purple-50 hover:bg-purple-100 active:bg-purple-200 text-purple-800"
               }`}
             >
               <span className="font-medium text-left">{item}</span>
@@ -816,7 +961,7 @@ const Task3PrintRooms = ({ onSubmit, isSubmitting, status }) => {
         {!isSaved ? (
           <button
             onClick={handleSave}
-            className="w-full bg-green-500 hover:bg-green-600 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold flex items-center justify-center gap-2"
+            className="w-full bg-green-500 hover:bg-green-600 active:bg-green-700 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold flex items-center justify-center gap-2"
           >
             <span className="text-xl">💾</span>
             Зберегти
@@ -831,7 +976,7 @@ const Task3PrintRooms = ({ onSubmit, isSubmitting, status }) => {
             </div>
             <button
               onClick={handleEdit}
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold flex items-center justify-center gap-2"
+              className="w-full bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold flex items-center justify-center gap-2"
             >
               <span className="text-xl">✏️</span>
               Редагувати
@@ -842,7 +987,7 @@ const Task3PrintRooms = ({ onSubmit, isSubmitting, status }) => {
         <button
           onClick={handleSubmit}
           disabled={isSubmitting}
-          className="w-full bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
+          className="w-full bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
         >
           <span className="text-xl">📤</span>
           {isSubmitting ? "Надсилання..." : "Надіслати"}
@@ -1018,8 +1163,11 @@ const HistoryDetailView = ({ date, onBack }) => {
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <button
-          onClick={onBack}
-          className="p-2 hover:bg-gray-100 rounded-lg transition text-2xl"
+          onClick={() => {
+            vibrateDevice("buttonPress");
+            onBack();
+          }}
+          className="p-2 hover:bg-gray-100 active:bg-gray-200 rounded-lg transition text-2xl"
         >
           ◀
         </button>
@@ -1033,11 +1181,14 @@ const HistoryDetailView = ({ date, onBack }) => {
 
       <div className="grid grid-cols-3 gap-3">
         <button
-          onClick={() => setSelectedTask("task1")}
+          onClick={() => {
+            vibrateDevice("buttonPress");
+            setSelectedTask("task1");
+          }}
           className={`p-3 rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
             selectedTask === "task1"
               ? "bg-blue-600 text-white"
-              : "bg-white text-gray-700 border hover:bg-blue-50"
+              : "bg-white text-gray-700 border hover:bg-blue-50 active:bg-blue-100"
           }`}
         >
           <div className="flex flex-col items-center gap-1">
@@ -1046,11 +1197,14 @@ const HistoryDetailView = ({ date, onBack }) => {
           </div>
         </button>
         <button
-          onClick={() => setSelectedTask("task2")}
+          onClick={() => {
+            vibrateDevice("buttonPress");
+            setSelectedTask("task2");
+          }}
           className={`p-3 rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
             selectedTask === "task2"
               ? "bg-orange-600 text-white"
-              : "bg-white text-gray-700 border hover:bg-orange-50"
+              : "bg-white text-gray-700 border hover:bg-orange-50 active:bg-orange-100"
           }`}
         >
           <div className="flex flex-col items-center gap-1">
@@ -1059,11 +1213,14 @@ const HistoryDetailView = ({ date, onBack }) => {
           </div>
         </button>
         <button
-          onClick={() => setSelectedTask("task3")}
+          onClick={() => {
+            vibrateDevice("buttonPress");
+            setSelectedTask("task3");
+          }}
           className={`p-3 rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
             selectedTask === "task3"
               ? "bg-purple-600 text-white"
-              : "bg-white text-gray-700 border hover:bg-purple-50"
+              : "bg-white text-gray-700 border hover:bg-purple-50 active:bg-purple-100"
           }`}
         >
           <div className="flex flex-col items-center gap-1">
@@ -1082,7 +1239,7 @@ const HistoryDetailView = ({ date, onBack }) => {
   );
 };
 
-// History View
+// Enhanced History View with Vibration
 const HistoryView = () => {
   const [savedDates, setSavedDates] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -1106,7 +1263,9 @@ const HistoryView = () => {
   };
 
   const handleDeleteDate = (date) => {
+    vibrateDevice("buttonPress");
     if (window.confirm(`Видалити всі дані за ${formatDate(date)}?`)) {
+      vibrateDevice("delete");
       const keysToDelete = [];
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
@@ -1124,6 +1283,7 @@ const HistoryView = () => {
   };
 
   const exportData = () => {
+    vibrateDevice("medium");
     const allData = {};
     savedDates.forEach((date) => {
       allData[date] = {
@@ -1143,6 +1303,7 @@ const HistoryView = () => {
       .slice(0, 10)}.json`;
     link.click();
     URL.revokeObjectURL(url);
+    vibrateDevice("success");
     showToast("Дані експортовано");
   };
 
@@ -1178,7 +1339,7 @@ const HistoryView = () => {
         {savedDates.length > 0 && (
           <button
             onClick={exportData}
-            className="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform font-medium flex items-center gap-2"
+            className="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 text-white rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform font-medium flex items-center gap-2"
           >
             <span className="text-lg">📄</span>
             Експорт
@@ -1213,8 +1374,11 @@ const HistoryView = () => {
 
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => setSelectedDate(date)}
-                    className="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform font-medium flex items-center gap-2"
+                    onClick={() => {
+                      vibrateDevice("buttonPress");
+                      setSelectedDate(date);
+                    }}
+                    className="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 text-white rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform font-medium flex items-center gap-2"
                   >
                     <span className="text-lg">👁️</span>
                     Переглянути
@@ -1222,7 +1386,7 @@ const HistoryView = () => {
 
                   <button
                     onClick={() => handleDeleteDate(date)}
-                    className="px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform"
+                    className="px-3 py-2 bg-red-500 hover:bg-red-600 active:bg-red-700 text-white rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform"
                   >
                     <span className="text-lg">🗑️</span>
                   </button>
@@ -1236,29 +1400,136 @@ const HistoryView = () => {
   );
 };
 
-// Main App Component
+// PWA Status Component
+const PWAStatus = () => {
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [isInstalled, setIsInstalled] = useState(false);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    // Check if installed
+    const isStandalone =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      window.navigator.standalone === true;
+    setIsInstalled(isStandalone);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
+
+  return (
+    <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-xl shadow-md p-4 mx-4 mb-4">
+      <h3 className="font-semibold text-indigo-800 mb-3 flex items-center gap-2">
+        📱 PWA Статус:
+      </h3>
+      <div className="grid grid-cols-2 gap-4 text-sm">
+        <div className="flex items-center gap-2">
+          <span
+            className={`w-3 h-3 rounded-full ${
+              isOnline ? "bg-green-500" : "bg-red-500"
+            }`}
+          ></span>
+          <span className="text-gray-700">
+            {isOnline ? "Онлайн" : "Офлайн"}
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span
+            className={`w-3 h-3 rounded-full ${
+              isInstalled ? "bg-green-500" : "bg-orange-500"
+            }`}
+          ></span>
+          <span className="text-gray-700">
+            {isInstalled ? "Встановлено" : "В браузері"}
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="w-3 h-3 bg-green-500 rounded-full"></span>
+          <span className="text-gray-700">Вібрація</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="w-3 h-3 bg-green-500 rounded-full"></span>
+          <span className="text-gray-700">Локальне збереження</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Main App Component with PWA Features
 export default function App() {
   const [currentTask, setCurrentTask] = useState("task3");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState(null);
 
+  // Parse URL params for shortcuts
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const taskParam = urlParams.get("task");
+    if (taskParam && ["task1", "task2", "task3"].includes(taskParam)) {
+      setCurrentTask(taskParam);
+    }
+  }, []);
+
+  // Request wake lock when app starts
+  useEffect(() => {
+    if (window.requestWakeLock) {
+      window.requestWakeLock();
+    }
+
+    return () => {
+      if (window.releaseWakeLock) {
+        window.releaseWakeLock();
+      }
+    };
+  }, []);
+
   const handleSubmit = useCallback(async (data) => {
     setIsSubmitting(true);
     setStatus(null);
+    vibrateDevice("medium");
+
+    // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
+
     setStatus({ success: true });
+    vibrateDevice("success");
     setIsSubmitting(false);
+
     setTimeout(() => setStatus(null), 5000);
   }, []);
 
+  const handleTaskChange = (task) => {
+    vibrateDevice("buttonPress");
+    setCurrentTask(task);
+
+    // Update URL for shortcuts
+    const url = new URL(window.location);
+    if (task !== "history") {
+      url.searchParams.set("task", task);
+    } else {
+      url.searchParams.delete("task");
+    }
+    window.history.replaceState({}, "", url);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 pb-4">
+      <PWAInstallBanner />
+
       <div className="max-w-lg mx-auto">
         <header className="rounded-xl shadow-md p-4 bg-white mb-4 mx-4">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900 flex items-center justify-center gap-3">
               <span className="text-2xl">📊</span>
-              Статистика роботи
+              Статистика роботи 1.11V
             </h1>
             <p className="text-sm text-gray-500 italic mt-2">
               Збір даних по персоналу, транспорту та канцелярії
@@ -1272,11 +1543,11 @@ export default function App() {
           </h2>
           <div className="grid grid-cols-4 gap-3">
             <button
-              onClick={() => setCurrentTask("task1")}
+              onClick={() => handleTaskChange("task1")}
               className={`p-3 rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
                 currentTask === "task1"
                   ? "bg-blue-600 text-white"
-                  : "bg-white text-gray-700 border hover:bg-blue-50"
+                  : "bg-white text-gray-700 border hover:bg-blue-50 active:bg-blue-100"
               }`}
             >
               <div className="flex flex-col items-center gap-1">
@@ -1285,11 +1556,11 @@ export default function App() {
               </div>
             </button>
             <button
-              onClick={() => setCurrentTask("task2")}
+              onClick={() => handleTaskChange("task2")}
               className={`p-3 rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
                 currentTask === "task2"
                   ? "bg-orange-600 text-white"
-                  : "bg-white text-gray-700 border hover:bg-orange-50"
+                  : "bg-white text-gray-700 border hover:bg-orange-50 active:bg-orange-100"
               }`}
             >
               <div className="flex flex-col items-center gap-1">
@@ -1298,11 +1569,11 @@ export default function App() {
               </div>
             </button>
             <button
-              onClick={() => setCurrentTask("task3")}
+              onClick={() => handleTaskChange("task3")}
               className={`p-3 rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
                 currentTask === "task3"
                   ? "bg-purple-600 text-white"
-                  : "bg-white text-gray-700 border hover:bg-purple-50"
+                  : "bg-white text-gray-700 border hover:bg-purple-50 active:bg-purple-100"
               }`}
             >
               <div className="flex flex-col items-center gap-1">
@@ -1311,11 +1582,11 @@ export default function App() {
               </div>
             </button>
             <button
-              onClick={() => setCurrentTask("history")}
+              onClick={() => handleTaskChange("history")}
               className={`p-3 rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
                 currentTask === "history"
                   ? "bg-indigo-600 text-white"
-                  : "bg-white text-gray-700 border hover:bg-indigo-50"
+                  : "bg-white text-gray-700 border hover:bg-indigo-50 active:bg-indigo-100"
               }`}
             >
               <div className="flex flex-col items-center gap-1">
@@ -1351,34 +1622,12 @@ export default function App() {
           {currentTask === "history" && <HistoryView />}
         </div>
 
-        <div className="bg-yellow-50 border-l-4 border-yellow-400 rounded-xl shadow-md p-4 mx-4 mb-4">
-          <h3 className="font-semibold text-yellow-800 mb-3 flex items-center gap-2">
-            💼 PWA Можливості:
-          </h3>
-          <div className="grid grid-cols-2 gap-2 text-sm text-yellow-700">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-              <span>Вібрація кнопок</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-              <span>Офлайн робота</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-              <span>Історія даних</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-              <span>Експорт даних</span>
-            </div>
-          </div>
-        </div>
+        <PWAStatus />
 
         <div className="text-center mt-6 mx-4">
           <div className="flex items-center justify-center gap-2">
             <span className="text-xs text-gray-400">
-              Work Statistics PWA v4.0.0
+              Work Statistics PWA v4.1.0 🚀
             </span>
           </div>
         </div>
