@@ -16,8 +16,6 @@ const translations = {
     // Дії
     save: "Зберегти",
     edit: "Редагувати",
-    send: "Надіслати",
-    sending: "Надсилання...",
     copy: "Копіювати",
     copied: "Скопійовано!",
     delete: "Видалити",
@@ -81,6 +79,12 @@ const translations = {
     ukrainian: "Українська",
     english: "English",
     dutch: "Nederlands",
+    theme: "Тема",
+    light: "Світла",
+    dark: "Темна",
+    vibrationSetting: "Вібрація",
+    vibrationOn: "Увімкнено",
+    vibrationOff: "Вимкнено",
   },
 
   en: {
@@ -97,8 +101,6 @@ const translations = {
     // Actions
     save: "Save",
     edit: "Edit",
-    send: "Send",
-    sending: "Sending...",
     copy: "Copy",
     copied: "Copied!",
     delete: "Delete",
@@ -162,6 +164,12 @@ const translations = {
     ukrainian: "Українська",
     english: "English",
     dutch: "Nederlands",
+    theme: "Theme",
+    light: "Light",
+    dark: "Dark",
+    vibrationSetting: "Vibration",
+    vibrationOn: "On",
+    vibrationOff: "Off",
   },
 
   nl: {
@@ -178,8 +186,6 @@ const translations = {
     // Acties
     save: "Opslaan",
     edit: "Bewerken",
-    send: "Versturen",
-    sending: "Versturen...",
     copy: "Kopiëren",
     copied: "Gekopieerd!",
     delete: "Verwijderen",
@@ -243,6 +249,12 @@ const translations = {
     ukrainian: "Українська",
     english: "English",
     dutch: "Nederlands",
+    theme: "Thema",
+    light: "Licht",
+    dark: "Donker",
+    vibrationSetting: "Trillen",
+    vibrationOn: "Aan",
+    vibrationOff: "Uit",
   },
 };
 
@@ -321,7 +333,8 @@ const VIBRATION_PATTERNS = {
 
 // Vibration helper function
 const vibrateDevice = (pattern) => {
-  if ("vibrate" in navigator) {
+  const isVibrationEnabled = loadFromStorage("app-vibration-enabled", true);
+  if (isVibrationEnabled && "vibrate" in navigator) {
     if (typeof pattern === "string" && VIBRATION_PATTERNS[pattern]) {
       navigator.vibrate(VIBRATION_PATTERNS[pattern]);
     } else if (Array.isArray(pattern) || typeof pattern === "number") {
@@ -459,25 +472,25 @@ const PWAInstallBanner = ({ lang }) => {
   if (!showInstallBanner || isInstalled) return null;
 
   return (
-    <div className="fixed top-4 left-4 right-4 z-50 bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 rounded-xl shadow-lg">
+    <div className="fixed top-2 left-2 right-2 z-50 bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-2 rounded-lg shadow-lg">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <span className="text-2xl">📱</span>
+        <div className="flex items-center gap-2">
+          <span className="text-xl">📱</span>
           <div>
-            <h3 className="font-semibold">{t(lang, "pwaInstall")}</h3>
-            <p className="text-sm opacity-90">{t(lang, "pwaInstallDesc")}</p>
+            <h3 className="font-semibold text-sm">{t(lang, "pwaInstall")}</h3>
+            <p className="text-xs opacity-90">{t(lang, "pwaInstallDesc")}</p>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-1">
           <button
             onClick={handleInstall}
-            className="px-4 py-2 bg-white text-blue-600 rounded-lg font-semibold text-sm hover:bg-gray-100 transition"
+            className="px-3 py-1 bg-white text-blue-600 rounded-md font-semibold text-xs hover:bg-gray-100 transition"
           >
             {t(lang, "install")}
           </button>
           <button
             onClick={handleDismiss}
-            className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition"
+            className="p-1 hover:bg-white hover:bg-opacity-20 rounded-md transition"
           >
             ✕
           </button>
@@ -497,8 +510,13 @@ const Toast = ({ message, isVisible, onClose, type = "success" }) => {
 
   if (!isVisible) return null;
 
-  const bgColor = type === "success" ? "bg-green-500" : "bg-red-500";
-  const emoji = type === "success" ? "✅" : "❌";
+  const bgColor =
+    type === "success"
+      ? "bg-green-500"
+      : type === "copy"
+      ? "bg-blue-500"
+      : "bg-red-500";
+  const emoji = type === "success" ? "✅" : type === "copy" ? "📋" : "❌";
 
   return (
     <div
@@ -535,24 +553,26 @@ const BottomSheet = ({ isOpen, onClose, title, children }) => {
   return (
     <div className="fixed inset-0 z-50">
       <div
-        className="fixed inset-0 bg-black bg-opacity-30"
+        className="fixed inset-0 bg-black bg-opacity-30 dark:bg-opacity-50"
         onClick={() => {
           vibrateDevice("buttonPress");
           onClose();
         }}
       />
-      <div className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 rounded-t-3xl shadow-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex justify-center py-3">
-          <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
+          <div className="w-12 h-1.5 bg-gray-300 dark:bg-gray-600 rounded-full" />
         </div>
         <div className="flex items-center justify-between px-6 pb-4">
-          <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+            {title}
+          </h3>
           <button
             onClick={() => {
               vibrateDevice("buttonPress");
               onClose();
             }}
-            className="p-2 hover:bg-gray-100 rounded-xl transition text-2xl"
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition text-2xl"
           >
             ✕
           </button>
@@ -582,10 +602,14 @@ const Counter = ({ value, onChange, label, lang }) => {
   return (
     <div className="flex flex-col">
       <div className="text-center mb-6">
-        <h2 className="text-xl font-semibold text-gray-700 mb-4">{label}</h2>
-        <div className="rounded-xl shadow-md p-4 bg-white border">
-          <span className="text-5xl font-bold text-blue-600">{value}</span>
-          <p className="text-sm text-gray-500 italic mt-2">
+        <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-4">
+          {label}
+        </h2>
+        <div className="rounded-xl shadow-md p-4 bg-white dark:bg-gray-700 border dark:border-gray-600">
+          <span className="text-5xl font-bold text-blue-600 dark:text-blue-400">
+            {value}
+          </span>
+          <p className="text-sm text-gray-500 dark:text-gray-400 italic mt-2">
             {t(lang, "units")}
           </p>
         </div>
@@ -615,10 +639,14 @@ const NumberGrid = ({ value, onChange, label, onClose, lang }) => {
   return (
     <div className="flex flex-col">
       <div className="text-center mb-6">
-        <h2 className="text-xl font-semibold text-gray-700 mb-4">{label}</h2>
-        <div className="rounded-xl shadow-md p-4 bg-white border">
-          <span className="text-5xl font-bold text-purple-600">{value}</span>
-          <p className="text-sm text-gray-500 italic mt-2">
+        <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-4">
+          {label}
+        </h2>
+        <div className="rounded-xl shadow-md p-4 bg-white dark:bg-gray-700 border dark:border-gray-600">
+          <span className="text-5xl font-bold text-purple-600 dark:text-purple-400">
+            {value}
+          </span>
+          <p className="text-sm text-gray-500 dark:text-gray-400 italic mt-2">
             {t(lang, "units")}
           </p>
         </div>
@@ -635,7 +663,7 @@ const NumberGrid = ({ value, onChange, label, onClose, lang }) => {
             className={`h-12 text-sm font-bold rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
               value === i
                 ? "bg-purple-600 text-white"
-                : "bg-white text-gray-700 border hover:bg-purple-50 active:bg-purple-100"
+                : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border dark:border-gray-600 hover:bg-purple-50 dark:hover:bg-purple-900 active:bg-purple-100 dark:active:bg-purple-800"
             }`}
           >
             {i}
@@ -647,7 +675,7 @@ const NumberGrid = ({ value, onChange, label, onClose, lang }) => {
 };
 
 // Task 1: Personnel & Cars
-const Task1PersonnelCars = ({ onSubmit, isSubmitting, status, lang }) => {
+const Task1PersonnelCars = ({ lang }) => {
   const [personnelData, setPersonnelData] = useState({});
   const [carsCount, setCarsCount] = useState(0);
   const [selectedZone, setSelectedZone] = useState(null);
@@ -711,26 +739,33 @@ const Task1PersonnelCars = ({ onSubmit, isSubmitting, status, lang }) => {
     showToast(t(lang, "editMode"));
   };
 
-  const handleSubmit = () => {
+  const handleCopy = () => {
     const entries = [];
     Object.entries(personnelData).forEach(([zone, count]) => {
       if (count > 0) {
-        entries.push({ zone: zone, type: "Personnel", count: count });
+        entries.push(`${zone}: ${count}`);
       }
     });
     if (carsCount > 0) {
-      entries.push({ zone: "Parking", type: "Cars", count: carsCount });
+      entries.push(`${t(lang, "totalCars")}: ${carsCount}`);
     }
+
     if (entries.length === 0) {
       showToast(t(lang, "dataEmpty"), "error");
       return;
     }
-    vibrateDevice("medium");
-    onSubmit({
-      task: "Task 1",
-      date: new Date().toISOString().slice(0, 16),
-      entries: entries,
+
+    const date = new Date().toLocaleDateString("uk-UA", {
+      day: "2-digit",
+      month: "2-digit",
     });
+    const textToCopy = `${date}\n${t(lang, "personnel")}:\n${entries.join(
+      "\n"
+    )}`;
+
+    copyToClipboard(textToCopy);
+    vibrateDevice("success");
+    showToast(t(lang, "copied"), "copy");
   };
 
   return (
@@ -742,8 +777,8 @@ const Task1PersonnelCars = ({ onSubmit, isSubmitting, status, lang }) => {
         type={toast.type}
       />
 
-      <div className="rounded-xl shadow-md p-4 bg-white space-y-4">
-        <h2 className="text-xl font-semibold text-gray-700 flex items-center gap-2">
+      <div className="rounded-xl shadow-md p-4 bg-white dark:bg-gray-800 space-y-4">
+        <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-2">
           <span className="text-xl">👥</span>
           {t(lang, "personnelByZones")}
         </h2>
@@ -760,15 +795,15 @@ const Task1PersonnelCars = ({ onSubmit, isSubmitting, status, lang }) => {
               disabled={isSaved}
               className={`w-full rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform flex items-center justify-between ${
                 isSaved
-                  ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                  : "bg-blue-50 hover:bg-blue-100 active:bg-blue-200 text-blue-800"
+                  ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                  : "bg-blue-50 dark:bg-blue-900 hover:bg-blue-100 dark:hover:bg-blue-800 active:bg-blue-200 dark:active:bg-blue-700 text-blue-800 dark:text-blue-200"
               }`}
             >
               <span className="font-medium">{zone}</span>
               <span
                 className={`px-3 py-1 rounded-lg text-sm font-bold ${
                   isSaved
-                    ? "bg-gray-300 text-gray-500"
+                    ? "bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400"
                     : "bg-blue-600 text-white"
                 }`}
               >
@@ -779,8 +814,8 @@ const Task1PersonnelCars = ({ onSubmit, isSubmitting, status, lang }) => {
         </div>
       </div>
 
-      <div className="rounded-xl shadow-md p-4 bg-white space-y-4">
-        <h2 className="text-xl font-semibold text-gray-700 flex items-center gap-2">
+      <div className="rounded-xl shadow-md p-4 bg-white dark:bg-gray-800 space-y-4">
+        <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-2">
           <span className="text-xl">🚗</span>
           {t(lang, "cars")}
         </h2>
@@ -794,14 +829,16 @@ const Task1PersonnelCars = ({ onSubmit, isSubmitting, status, lang }) => {
           disabled={isSaved}
           className={`w-full rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform flex items-center justify-between ${
             isSaved
-              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-              : "bg-green-50 hover:bg-green-100 active:bg-green-200 text-green-800"
+              ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+              : "bg-green-50 dark:bg-green-900 hover:bg-green-100 dark:hover:bg-green-800 active:bg-green-200 dark:active:bg-green-700 text-green-800 dark:text-green-200"
           }`}
         >
           <span className="font-medium">{t(lang, "totalCars")}</span>
           <span
             className={`px-3 py-1 rounded-lg text-sm font-bold ${
-              isSaved ? "bg-gray-300 text-gray-500" : "bg-green-600 text-white"
+              isSaved
+                ? "bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400"
+                : "bg-green-600 text-white"
             }`}
           >
             {carsCount}
@@ -820,9 +857,9 @@ const Task1PersonnelCars = ({ onSubmit, isSubmitting, status, lang }) => {
           </button>
         ) : (
           <div className="space-y-3">
-            <div className="flex items-center gap-2 p-3 bg-green-50 border-l-4 border-green-400 rounded-lg">
+            <div className="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-900 border-l-4 border-green-400 dark:border-green-600 rounded-lg">
               <span className="text-xl">✅</span>
-              <span className="text-green-800 font-medium">
+              <span className="text-green-800 dark:text-green-200 font-medium">
                 {t(lang, "dataSavedToday")}
               </span>
             </div>
@@ -837,30 +874,13 @@ const Task1PersonnelCars = ({ onSubmit, isSubmitting, status, lang }) => {
         )}
 
         <button
-          onClick={handleSubmit}
-          disabled={isSubmitting}
-          className="w-full bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
+          onClick={handleCopy}
+          className="w-full bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
         >
-          <span className="text-xl">📤</span>
-          {isSubmitting ? t(lang, "sending") : t(lang, "send")}
+          <span className="text-xl">📋</span>
+          {t(lang, "copy")}
         </button>
       </div>
-
-      {status && (
-        <div
-          className={`p-4 rounded-xl shadow-md border ${
-            status.success
-              ? "bg-green-50 text-green-800 border-green-200"
-              : "bg-red-50 text-red-800 border-red-200"
-          }`}
-        >
-          <span className="font-medium">
-            {status.success
-              ? `✅ ${t(lang, "successSent")}`
-              : `❌ ${t(lang, "error")}: ${status.error}`}
-          </span>
-        </div>
-      )}
 
       <BottomSheet
         isOpen={!!selectedZone}
@@ -888,7 +908,7 @@ const Task1PersonnelCars = ({ onSubmit, isSubmitting, status, lang }) => {
 };
 
 // Task 2: Bike Parking
-const Task2BikeParking = ({ onSubmit, isSubmitting, status, lang }) => {
+const Task2BikeParking = ({ lang }) => {
   const [bikeData, setBikeData] = useState({});
   const [selectedBikeType, setSelectedBikeType] = useState(null);
   const [toast, setToast] = useState({
@@ -943,23 +963,28 @@ const Task2BikeParking = ({ onSubmit, isSubmitting, status, lang }) => {
     showToast(t(lang, "editMode"));
   };
 
-  const handleSubmit = () => {
+  const handleCopy = () => {
     const entries = [];
     Object.entries(bikeData).forEach(([type, count]) => {
       if (count > 0) {
-        entries.push({ type: type, count: count });
+        entries.push(`${type}: ${count}`);
       }
     });
+
     if (entries.length === 0) {
       showToast(t(lang, "dataEmpty"), "error");
       return;
     }
-    vibrateDevice("medium");
-    onSubmit({
-      task: "Task 2",
-      date: new Date().toISOString().slice(0, 16),
-      entries: entries,
+
+    const date = new Date().toLocaleDateString("uk-UA", {
+      day: "2-digit",
+      month: "2-digit",
     });
+    const textToCopy = `${date}\n${t(lang, "bikes")}:\n${entries.join("\n")}`;
+
+    copyToClipboard(textToCopy);
+    vibrateDevice("success");
+    showToast(t(lang, "copied"), "copy");
   };
 
   return (
@@ -971,8 +996,8 @@ const Task2BikeParking = ({ onSubmit, isSubmitting, status, lang }) => {
         type={toast.type}
       />
 
-      <div className="rounded-xl shadow-md p-4 bg-white space-y-4">
-        <h2 className="text-xl font-semibold text-gray-700 flex items-center gap-2">
+      <div className="rounded-xl shadow-md p-4 bg-white dark:bg-gray-800 space-y-4">
+        <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-2">
           <span className="text-xl">🚴</span>
           {t(lang, "bikesAndTransport")}
         </h2>
@@ -989,15 +1014,15 @@ const Task2BikeParking = ({ onSubmit, isSubmitting, status, lang }) => {
               disabled={isSaved}
               className={`w-full rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform flex items-center justify-between ${
                 isSaved
-                  ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                  : "bg-orange-50 hover:bg-orange-100 active:bg-orange-200 text-orange-800"
+                  ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                  : "bg-orange-50 dark:bg-orange-900 hover:bg-orange-100 dark:hover:bg-orange-800 active:bg-orange-200 dark:active:bg-orange-700 text-orange-800 dark:text-orange-200"
               }`}
             >
               <span className="font-medium text-left">{type}</span>
               <span
                 className={`px-3 py-1 rounded-lg text-sm font-bold ${
                   isSaved
-                    ? "bg-gray-300 text-gray-500"
+                    ? "bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400"
                     : "bg-orange-600 text-white"
                 }`}
               >
@@ -1019,9 +1044,9 @@ const Task2BikeParking = ({ onSubmit, isSubmitting, status, lang }) => {
           </button>
         ) : (
           <div className="space-y-3">
-            <div className="flex items-center gap-2 p-3 bg-green-50 border-l-4 border-green-400 rounded-lg">
+            <div className="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-900 border-l-4 border-green-400 dark:border-green-600 rounded-lg">
               <span className="text-xl">✅</span>
-              <span className="text-green-800 font-medium">
+              <span className="text-green-800 dark:text-green-200 font-medium">
                 {t(lang, "dataSavedToday")}
               </span>
             </div>
@@ -1036,30 +1061,13 @@ const Task2BikeParking = ({ onSubmit, isSubmitting, status, lang }) => {
         )}
 
         <button
-          onClick={handleSubmit}
-          disabled={isSubmitting}
-          className="w-full bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
+          onClick={handleCopy}
+          className="w-full bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
         >
-          <span className="text-xl">📤</span>
-          {isSubmitting ? t(lang, "sending") : t(lang, "send")}
+          <span className="text-xl">📋</span>
+          {t(lang, "copy")}
         </button>
       </div>
-
-      {status && (
-        <div
-          className={`p-4 rounded-xl shadow-md border ${
-            status.success
-              ? "bg-green-50 text-green-800 border-green-200"
-              : "bg-red-50 text-red-800 border-red-200"
-          }`}
-        >
-          <span className="font-medium">
-            {status.success
-              ? `✅ ${t(lang, "successSent")}`
-              : `❌ ${t(lang, "error")}: ${status.error}`}
-          </span>
-        </div>
-      )}
 
       <BottomSheet
         isOpen={!!selectedBikeType}
@@ -1080,7 +1088,7 @@ const Task2BikeParking = ({ onSubmit, isSubmitting, status, lang }) => {
 };
 
 // Task 3: Print Rooms
-const Task3PrintRooms = ({ onSubmit, isSubmitting, status, lang }) => {
+const Task3PrintRooms = ({ lang }) => {
   const [selectedRoom, setSelectedRoom] = useState(PRINT_ROOMS[0]);
   const [printData, setPrintData] = useState({});
   const [selectedItem, setSelectedItem] = useState(null);
@@ -1137,24 +1145,31 @@ const Task3PrintRooms = ({ onSubmit, isSubmitting, status, lang }) => {
     showToast(t(lang, "editMode"));
   };
 
-  const handleSubmit = () => {
+  const handleCopy = () => {
     const entries = [];
     Object.entries(printData).forEach(([item, count]) => {
       if (count > 0) {
-        entries.push({ type: item, count: count });
+        entries.push(`${item}: ${count}`);
       }
     });
+
     if (entries.length === 0) {
       showToast(t(lang, "dataEmpty"), "error");
       return;
     }
-    vibrateDevice("medium");
-    onSubmit({
-      task: "Task 3",
-      zone: selectedRoom,
-      date: new Date().toISOString().slice(0, 16),
-      entries: entries,
+
+    const date = new Date().toLocaleDateString("uk-UA", {
+      day: "2-digit",
+      month: "2-digit",
     });
+    const textToCopy = `${date}\n${t(
+      lang,
+      "room"
+    )} ${selectedRoom}:\n${entries.join("\n")}`;
+
+    copyToClipboard(textToCopy);
+    vibrateDevice("success");
+    showToast(t(lang, "copied"), "copy");
   };
 
   return (
@@ -1166,8 +1181,8 @@ const Task3PrintRooms = ({ onSubmit, isSubmitting, status, lang }) => {
         type={toast.type}
       />
 
-      <div className="rounded-xl shadow-md p-4 bg-white space-y-4">
-        <h2 className="text-xl font-semibold text-gray-700 flex items-center gap-2">
+      <div className="rounded-xl shadow-md p-4 bg-white dark:bg-gray-800 space-y-4">
+        <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-2">
           <span className="text-xl">🖨️</span>
           {t(lang, "officeSupplies")}
         </h2>
@@ -1183,7 +1198,7 @@ const Task3PrintRooms = ({ onSubmit, isSubmitting, status, lang }) => {
               className={`py-2 px-3 text-sm font-bold rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
                 selectedRoom === room
                   ? "bg-purple-600 text-white"
-                  : "bg-white text-gray-700 border hover:bg-purple-50 active:bg-purple-100"
+                  : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border dark:border-gray-600 hover:bg-purple-50 dark:hover:bg-purple-900 active:bg-purple-100 dark:active:bg-purple-800"
               }`}
             >
               {room}
@@ -1204,8 +1219,8 @@ const Task3PrintRooms = ({ onSubmit, isSubmitting, status, lang }) => {
               disabled={isSaved}
               className={`w-full rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform flex items-center justify-between ${
                 isSaved
-                  ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                  : "bg-purple-50 hover:bg-purple-100 active:bg-purple-200 text-purple-800"
+                  ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                  : "bg-purple-50 dark:bg-purple-900 hover:bg-purple-100 dark:hover:bg-purple-800 active:bg-purple-200 dark:active:bg-purple-700 text-purple-800 dark:text-purple-200"
               }`}
             >
               <span className="font-medium text-left">{item}</span>
@@ -1213,13 +1228,13 @@ const Task3PrintRooms = ({ onSubmit, isSubmitting, status, lang }) => {
                 <span
                   className={`px-3 py-1 rounded-lg text-sm font-bold ${
                     isSaved
-                      ? "bg-gray-300 text-gray-500"
+                      ? "bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400"
                       : "bg-purple-600 text-white"
                   }`}
                 >
                   {printData[item] || 0}
                 </span>
-                <span className="text-gray-400">▶</span>
+                <span className="text-gray-400 dark:text-gray-500">▶</span>
               </div>
             </button>
           ))}
@@ -1237,9 +1252,9 @@ const Task3PrintRooms = ({ onSubmit, isSubmitting, status, lang }) => {
           </button>
         ) : (
           <div className="space-y-3">
-            <div className="flex items-center gap-2 p-3 bg-green-50 border-l-4 border-green-400 rounded-lg">
+            <div className="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-900 border-l-4 border-green-400 dark:border-green-600 rounded-lg">
               <span className="text-xl">✅</span>
-              <span className="text-green-800 font-medium">
+              <span className="text-green-800 dark:text-green-200 font-medium">
                 {t(lang, "dataSavedToday")}
               </span>
             </div>
@@ -1254,30 +1269,13 @@ const Task3PrintRooms = ({ onSubmit, isSubmitting, status, lang }) => {
         )}
 
         <button
-          onClick={handleSubmit}
-          disabled={isSubmitting}
-          className="w-full bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
+          onClick={handleCopy}
+          className="w-full bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
         >
-          <span className="text-xl">📤</span>
-          {isSubmitting ? t(lang, "sending") : t(lang, "send")}
+          <span className="text-xl">📋</span>
+          {t(lang, "copy")}
         </button>
       </div>
-
-      {status && (
-        <div
-          className={`p-4 rounded-xl shadow-md border ${
-            status.success
-              ? "bg-green-50 text-green-800 border-green-200"
-              : "bg-red-50 text-red-800 border-red-200"
-          }`}
-        >
-          <span className="font-medium">
-            {status.success
-              ? `✅ ${t(lang, "successSent")}`
-              : `❌ ${t(lang, "error")}: ${status.error}`}
-          </span>
-        </div>
-      )}
 
       <BottomSheet
         isOpen={!!selectedItem}
@@ -1301,10 +1299,16 @@ const Task3PrintRooms = ({ onSubmit, isSubmitting, status, lang }) => {
 // History Detail View
 const HistoryDetailView = ({ date, onBack, lang }) => {
   const [selectedTask, setSelectedTask] = useState("task1");
+  const [toast, setToast] = useState({ show: false, message: "" });
 
   const task1Data = getDataForDate(date, "task1");
   const task2Data = getDataForDate(date, "task2");
   const task3Data = getDataForDate(date, "task3");
+
+  const showToast = (message) => {
+    setToast({ show: true, message });
+    setTimeout(() => setToast({ show: false, message: "" }), 2000);
+  };
 
   const renderTask1Data = () => {
     const hasPersonnelData = Object.values(task1Data.personnel || {}).some(
@@ -1313,14 +1317,18 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
     const hasCarsData = task1Data.cars > 0;
 
     if (!hasPersonnelData && !hasCarsData) {
-      return <div className="text-gray-500 italic">{t(lang, "noData")}</div>;
+      return (
+        <div className="text-gray-500 dark:text-gray-400 italic">
+          {t(lang, "noData")}
+        </div>
+      );
     }
 
     return (
       <div className="space-y-4">
         {hasPersonnelData && (
           <div>
-            <h4 className="font-semibold text-blue-700 mb-2">
+            <h4 className="font-semibold text-blue-700 dark:text-blue-400 mb-2">
               {t(lang, "personnelByZones")}:
             </h4>
             <div className="space-y-2">
@@ -1329,10 +1337,12 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
                   count > 0 && (
                     <div
                       key={zone}
-                      className="flex justify-between items-center p-2 bg-blue-50 rounded-lg"
+                      className="flex justify-between items-center p-2 bg-blue-50 dark:bg-blue-900 rounded-lg"
                     >
-                      <span>{zone}</span>
-                      <span className="font-bold text-blue-600">{count}</span>
+                      <span className="dark:text-blue-200">{zone}</span>
+                      <span className="font-bold text-blue-600 dark:text-blue-300">
+                        {count}
+                      </span>
                     </div>
                   )
               )}
@@ -1342,12 +1352,16 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
 
         {hasCarsData && (
           <div>
-            <h4 className="font-semibold text-green-700 mb-2">
+            <h4 className="font-semibold text-green-700 dark:text-green-400 mb-2">
               {t(lang, "cars")}:
             </h4>
-            <div className="flex justify-between items-center p-2 bg-green-50 rounded-lg">
-              <span>{t(lang, "totalCars")}</span>
-              <span className="font-bold text-green-600">{task1Data.cars}</span>
+            <div className="flex justify-between items-center p-2 bg-green-50 dark:bg-green-900 rounded-lg">
+              <span className="dark:text-green-200">
+                {t(lang, "totalCars")}
+              </span>
+              <span className="font-bold text-green-600 dark:text-green-300">
+                {task1Data.cars}
+              </span>
             </div>
           </div>
         )}
@@ -1360,20 +1374,32 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
       ([_, c]) => c > 0
     );
     if (entries.length === 0)
-      return <div className="text-gray-500 italic">{t(lang, "noData")}</div>;
+      return (
+        <div className="text-gray-500 dark:text-gray-400 italic">
+          {t(lang, "noData")}
+        </div>
+      );
 
     return (
       <div className="space-y-2">
-        <h4 className="font-semibold text-orange-700 mb-2">
+        <Toast
+          message={toast.message}
+          isVisible={toast.show}
+          onClose={() => setToast({ show: false, message: "" })}
+          type="copy"
+        />
+        <h4 className="font-semibold text-orange-700 dark:text-orange-400 mb-2">
           {t(lang, "bikesAndTransport")}:
         </h4>
         {entries.map(([type, count]) => (
           <div
             key={type}
-            className="flex justify-between items-center p-2 bg-orange-50 rounded-lg"
+            className="flex justify-between items-center p-2 bg-orange-50 dark:bg-orange-900 rounded-lg"
           >
-            <span>{type}</span>
-            <span className="font-bold text-orange-600">{count}</span>
+            <span className="dark:text-orange-200">{type}</span>
+            <span className="font-bold text-orange-600 dark:text-orange-300">
+              {count}
+            </span>
           </div>
         ))}
         <button
@@ -1388,7 +1414,7 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
               text
             );
             copyToClipboard(formatted);
-            alert(t(lang, "copied"));
+            showToast(t(lang, "copied"));
           }}
           className="mt-2 w-full bg-indigo-500 hover:bg-indigo-600 text-white py-2 rounded-lg"
         >
@@ -1404,12 +1430,16 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
     );
 
     if (!hasData) {
-      return <div className="text-gray-500 italic">{t(lang, "noData")}</div>;
+      return (
+        <div className="text-gray-500 dark:text-gray-400 italic">
+          {t(lang, "noData")}
+        </div>
+      );
     }
 
     return (
       <div className="space-y-4">
-        <h4 className="font-semibold text-purple-700 mb-2">
+        <h4 className="font-semibold text-purple-700 dark:text-purple-400 mb-2">
           {t(lang, "officeSupplies")}:
         </h4>
         {Object.entries(task3Data).map(([room, roomData]) => {
@@ -1420,7 +1450,7 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
 
           return (
             <div key={room} className="space-y-2">
-              <h5 className="font-medium text-purple-600">
+              <h5 className="font-medium text-purple-600 dark:text-purple-300">
                 {t(lang, "room")} {room}:
               </h5>
               <div className="space-y-1 ml-4">
@@ -1429,10 +1459,10 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
                     count > 0 && (
                       <div
                         key={item}
-                        className="flex justify-between items-center p-2 bg-purple-50 rounded-lg"
+                        className="flex justify-between items-center p-2 bg-purple-50 dark:bg-purple-900 rounded-lg"
                       >
-                        <span>{item}</span>
-                        <span className="font-bold text-purple-600">
+                        <span className="dark:text-purple-200">{item}</span>
+                        <span className="font-bold text-purple-600 dark:text-purple-300">
                           {count}
                         </span>
                       </div>
@@ -1454,15 +1484,17 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
             vibrateDevice("buttonPress");
             onBack();
           }}
-          className="p-2 hover:bg-gray-100 active:bg-gray-200 rounded-lg transition text-2xl"
+          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 rounded-lg transition text-2xl"
         >
           ◀
         </button>
         <div>
-          <h2 className="text-xl font-semibold text-gray-900">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
             {formatDate(date, lang)}
           </h2>
-          <p className="text-sm text-gray-500">{t(lang, "detailedView")}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            {t(lang, "detailedView")}
+          </p>
         </div>
       </div>
 
@@ -1475,7 +1507,7 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
           className={`p-3 rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
             selectedTask === "task1"
               ? "bg-blue-600 text-white"
-              : "bg-white text-gray-700 border hover:bg-blue-50 active:bg-blue-100"
+              : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900 active:bg-blue-100 dark:active:bg-blue-800"
           }`}
         >
           <div className="flex flex-col items-center gap-1">
@@ -1491,7 +1523,7 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
           className={`p-3 rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
             selectedTask === "task2"
               ? "bg-orange-600 text-white"
-              : "bg-white text-gray-700 border hover:bg-orange-50 active:bg-orange-100"
+              : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border dark:border-gray-600 hover:bg-orange-50 dark:hover:bg-orange-900 active:bg-orange-100 dark:active:bg-orange-800"
           }`}
         >
           <div className="flex flex-col items-center gap-1">
@@ -1507,7 +1539,7 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
           className={`p-3 rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
             selectedTask === "task3"
               ? "bg-purple-600 text-white"
-              : "bg-white text-gray-700 border hover:bg-purple-50 active:bg-purple-100"
+              : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border dark:border-gray-600 hover:bg-purple-50 dark:hover:bg-purple-900 active:bg-purple-100 dark:active:bg-purple-800"
           }`}
         >
           <div className="flex flex-col items-center gap-1">
@@ -1517,7 +1549,7 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
         </button>
       </div>
 
-      <div className="rounded-xl shadow-md p-4 bg-white">
+      <div className="rounded-xl shadow-md p-4 bg-white dark:bg-gray-800">
         {selectedTask === "task1" && renderTask1Data()}
         {selectedTask === "task2" && renderTask2Data()}
         {selectedTask === "task3" && renderTask3Data()}
@@ -1617,11 +1649,11 @@ const HistoryView = ({ lang }) => {
 
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
             <span className="text-xl">📚</span>
             {t(lang, "historyTitle")}
           </h2>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             {t(lang, "recordsFound")}: {savedDates.length}
           </p>
         </div>
@@ -1639,25 +1671,31 @@ const HistoryView = ({ lang }) => {
 
       {savedDates.length === 0 ? (
         <div className="text-center py-12">
-          <span className="text-6xl text-gray-300 mb-4 block">📚</span>
-          <h3 className="text-lg font-semibold text-gray-600 mb-2">
+          <span className="text-6xl text-gray-300 dark:text-gray-600 mb-4 block">
+            📚
+          </span>
+          <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-300 mb-2">
             {t(lang, "historyEmpty")}
           </h3>
-          <p className="text-gray-500">{t(lang, "saveDataPrompt")}</p>
+          <p className="text-gray-500 dark:text-gray-400">
+            {t(lang, "saveDataPrompt")}
+          </p>
         </div>
       ) : (
         <div className="space-y-3">
           {savedDates.map((date) => (
             <div
               key={date}
-              className="rounded-xl shadow-md p-4 bg-white border hover:shadow-lg transition-shadow"
+              className="rounded-xl shadow-md p-4 bg-white dark:bg-gray-800 border dark:border-gray-700 hover:shadow-lg transition-shadow"
             >
               <div className="flex items-center justify-between">
                 <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100">
                     {formatDate(date, lang)}
                   </h3>
-                  <p className="text-sm text-gray-500 mt-1">{date}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    {date}
+                  </p>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -1712,8 +1750,8 @@ const PWAStatus = ({ lang }) => {
   }, []);
 
   return (
-    <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-xl shadow-md p-4 mx-4 mb-4">
-      <h3 className="font-semibold text-indigo-800 mb-3 flex items-center gap-2">
+    <div className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900 dark:to-purple-900 border border-indigo-200 dark:border-indigo-800 rounded-xl shadow-md p-4 mx-4 mb-4">
+      <h3 className="font-semibold text-indigo-800 dark:text-indigo-200 mb-3 flex items-center gap-2">
         📱 {t(lang, "pwaStatus")}:
       </h3>
       <div className="grid grid-cols-2 gap-4 text-sm">
@@ -1723,7 +1761,7 @@ const PWAStatus = ({ lang }) => {
               isOnline ? "bg-green-500" : "bg-red-500"
             }`}
           ></span>
-          <span className="text-gray-700">
+          <span className="text-gray-700 dark:text-gray-300">
             {isOnline ? t(lang, "online") : t(lang, "offline")}
           </span>
         </div>
@@ -1733,17 +1771,21 @@ const PWAStatus = ({ lang }) => {
               isInstalled ? "bg-green-500" : "bg-orange-500"
             }`}
           ></span>
-          <span className="text-gray-700">
+          <span className="text-gray-700 dark:text-gray-300">
             {isInstalled ? t(lang, "installed") : t(lang, "inBrowser")}
           </span>
         </div>
         <div className="flex items-center gap-2">
           <span className="w-3 h-3 bg-green-500 rounded-full"></span>
-          <span className="text-gray-700">{t(lang, "vibration")}</span>
+          <span className="text-gray-700 dark:text-gray-300">
+            {t(lang, "vibration")}
+          </span>
         </div>
         <div className="flex items-center gap-2">
           <span className="w-3 h-3 bg-green-500 rounded-full"></span>
-          <span className="text-gray-700">{t(lang, "localStorage")}</span>
+          <span className="text-gray-700 dark:text-gray-300">
+            {t(lang, "localStorage")}
+          </span>
         </div>
       </div>
     </div>
@@ -1751,36 +1793,137 @@ const PWAStatus = ({ lang }) => {
 };
 
 // Settings View
-const SettingsView = ({ lang, setLang }) => (
-  <div className="space-y-4">
-    <h2 className="text-xl font-semibold">⚙️ {t(lang, "settings")}</h2>
-    <label className="block text-sm text-gray-600 mb-2">
-      {t(lang, "language")}:
-    </label>
-    <select
-      value={lang}
-      onChange={(e) => {
-        vibrateDevice("buttonPress");
-        setLang(e.target.value);
-        saveToStorage("app-language", e.target.value);
-      }}
-      className="w-full p-2 border rounded-lg"
-    >
-      <option value="ua">{t(lang, "ukrainian")}</option>
-      <option value="en">{t(lang, "english")}</option>
-      <option value="nl">{t(lang, "dutch")}</option>
-    </select>
+const SettingsView = ({
+  lang,
+  setLang,
+  theme,
+  setTheme,
+  isVibrationEnabled,
+  setVibrationEnabled,
+}) => (
+  <div className="space-y-6">
+    <h2 className="text-xl font-semibold dark:text-gray-100">
+      ⚙️ {t(lang, "settings")}
+    </h2>
+
+    <div>
+      <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
+        {t(lang, "language")}:
+      </label>
+      <select
+        value={lang}
+        onChange={(e) => {
+          vibrateDevice("buttonPress");
+          setLang(e.target.value);
+          saveToStorage("app-language", e.target.value);
+        }}
+        className="w-full p-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+      >
+        <option value="ua">{t(lang, "ukrainian")}</option>
+        <option value="en">{t(lang, "english")}</option>
+        <option value="nl">{t(lang, "dutch")}</option>
+      </select>
+    </div>
+
+    <div>
+      <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
+        {t(lang, "theme")}:
+      </label>
+      <div className="flex gap-2">
+        <button
+          onClick={() => {
+            vibrateDevice("buttonPress");
+            setTheme("light");
+          }}
+          className={`w-full p-2 rounded-lg transition ${
+            theme === "light"
+              ? "bg-blue-600 text-white"
+              : "bg-gray-200 dark:bg-gray-700"
+          }`}
+        >
+          {t(lang, "light")}
+        </button>
+        <button
+          onClick={() => {
+            vibrateDevice("buttonPress");
+            setTheme("dark");
+          }}
+          className={`w-full p-2 rounded-lg transition ${
+            theme === "dark"
+              ? "bg-blue-600 text-white"
+              : "bg-gray-200 dark:bg-gray-700"
+          }`}
+        >
+          {t(lang, "dark")}
+        </button>
+      </div>
+    </div>
+
+    <div>
+      <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
+        {t(lang, "vibrationSetting")}:
+      </label>
+      <div className="flex gap-2">
+        <button
+          onClick={() => {
+            vibrateDevice("buttonPress");
+            setVibrationEnabled(true);
+          }}
+          className={`w-full p-2 rounded-lg transition ${
+            isVibrationEnabled
+              ? "bg-green-600 text-white"
+              : "bg-gray-200 dark:bg-gray-700"
+          }`}
+        >
+          {t(lang, "vibrationOn")}
+        </button>
+        <button
+          onClick={() => {
+            vibrateDevice("buttonPress");
+            setVibrationEnabled(false);
+          }}
+          className={`w-full p-2 rounded-lg transition ${
+            !isVibrationEnabled
+              ? "bg-red-600 text-white"
+              : "bg-gray-200 dark:bg-gray-700"
+          }`}
+        >
+          {t(lang, "vibrationOff")}
+        </button>
+      </div>
+    </div>
   </div>
 );
 
 // Main App Component
 export default function App() {
   const [currentTask, setCurrentTask] = useState("task3");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [status, setStatus] = useState(null);
-  const [lang, setLang] = useState(() => {
-    return loadFromStorage("app-language", "ua");
-  });
+  const [lang, setLang] = useState(() => loadFromStorage("app-language", "ua"));
+  const [theme, setThemeState] = useState(() =>
+    loadFromStorage("app-theme", "light")
+  );
+  const [isVibrationEnabled, setVibrationEnabledState] = useState(() =>
+    loadFromStorage("app-vibration-enabled", true)
+  );
+
+  const setTheme = (newTheme) => {
+    setThemeState(newTheme);
+    saveToStorage("app-theme", newTheme);
+  };
+
+  const setVibrationEnabled = (isEnabled) => {
+    setVibrationEnabledState(isEnabled);
+    saveToStorage("app-vibration-enabled", isEnabled);
+  };
+
+  useEffect(() => {
+    const root = window.document.documentElement;
+    if (theme === "dark") {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+  }, [theme]);
 
   // Parse URL params for shortcuts
   useEffect(() => {
@@ -1804,21 +1947,6 @@ export default function App() {
     };
   }, []);
 
-  const handleSubmit = useCallback(async (data) => {
-    setIsSubmitting(true);
-    setStatus(null);
-    vibrateDevice("medium");
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    setStatus({ success: true });
-    vibrateDevice("success");
-    setIsSubmitting(false);
-
-    setTimeout(() => setStatus(null), 5000);
-  }, []);
-
   const handleTaskChange = (task) => {
     vibrateDevice("buttonPress");
     setCurrentTask(task);
@@ -1834,33 +1962,43 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-4">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-4">
       <PWAInstallBanner lang={lang} />
 
       <div className="max-w-lg mx-auto">
-        <header className="rounded-xl shadow-md p-4 bg-white mb-4 mx-4">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900 flex items-center justify-center gap-3">
+        <header className="rounded-xl shadow-md p-4 bg-white dark:bg-gray-800 mb-4 mx-4 flex items-center justify-between">
+          <div className="text-center flex-grow">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center justify-center gap-3">
               <span className="text-2xl">📊</span>
-              {t(lang, "appTitle")} 1.16V
+              {t(lang, "appTitle")} 1.17V
             </h1>
-            <p className="text-sm text-gray-500 italic mt-2">
+            <p className="text-sm text-gray-500 dark:text-gray-400 italic mt-2">
               {t(lang, "appDesc")}
             </p>
           </div>
+          <button
+            onClick={() => handleTaskChange("settings")}
+            className={`p-3 rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
+              currentTask === "settings"
+                ? "bg-gray-800 text-white"
+                : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 active:bg-gray-100 dark:active:bg-gray-500"
+            }`}
+          >
+            <span className="text-xl">⚙️</span>
+          </button>
         </header>
 
-        <div className="rounded-xl shadow-md p-4 bg-white mx-4 mb-4">
-          <h2 className="text-xl font-semibold text-gray-700 mb-4">
+        <div className="rounded-xl shadow-md p-4 bg-white dark:bg-gray-800 mx-4 mb-4">
+          <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-4">
             {t(lang, "chooseTask")}
           </h2>
-          <div className="grid grid-cols-5 gap-3">
+          <div className="grid grid-cols-4 gap-3">
             <button
               onClick={() => handleTaskChange("task1")}
               className={`p-3 rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
                 currentTask === "task1"
                   ? "bg-blue-600 text-white"
-                  : "bg-white text-gray-700 border hover:bg-blue-50 active:bg-blue-100"
+                  : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900 active:bg-blue-100 dark:active:bg-blue-800"
               }`}
             >
               <div className="flex flex-col items-center gap-1">
@@ -1875,7 +2013,7 @@ export default function App() {
               className={`p-3 rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
                 currentTask === "task2"
                   ? "bg-orange-600 text-white"
-                  : "bg-white text-gray-700 border hover:bg-orange-50 active:bg-orange-100"
+                  : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border dark:border-gray-600 hover:bg-orange-50 dark:hover:bg-orange-900 active:bg-orange-100 dark:active:bg-orange-800"
               }`}
             >
               <div className="flex flex-col items-center gap-1">
@@ -1888,7 +2026,7 @@ export default function App() {
               className={`p-3 rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
                 currentTask === "task3"
                   ? "bg-purple-600 text-white"
-                  : "bg-white text-gray-700 border hover:bg-purple-50 active:bg-purple-100"
+                  : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border dark:border-gray-600 hover:bg-purple-50 dark:hover:bg-purple-900 active:bg-purple-100 dark:active:bg-purple-800"
               }`}
             >
               <div className="flex flex-col items-center gap-1">
@@ -1901,7 +2039,7 @@ export default function App() {
               className={`p-3 rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
                 currentTask === "history"
                   ? "bg-indigo-600 text-white"
-                  : "bg-white text-gray-700 border hover:bg-indigo-50 active:bg-indigo-100"
+                  : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border dark:border-gray-600 hover:bg-indigo-50 dark:hover:bg-indigo-900 active:bg-indigo-100 dark:active:bg-indigo-800"
               }`}
             >
               <div className="flex flex-col items-center gap-1">
@@ -1911,52 +2049,23 @@ export default function App() {
                 </span>
               </div>
             </button>
-            <button
-              onClick={() => handleTaskChange("settings")}
-              className={`p-3 rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
-                currentTask === "settings"
-                  ? "bg-gray-800 text-white"
-                  : "bg-white text-gray-700 border hover:bg-gray-50 active:bg-gray-100"
-              }`}
-            >
-              <div className="flex flex-col items-center gap-1">
-                <span className="text-xl">⚙️</span>
-                <span className="text-xs font-medium">
-                  {t(lang, "settings")}
-                </span>
-              </div>
-            </button>
           </div>
         </div>
 
-        <div className="rounded-xl shadow-md p-4 bg-white mx-4 mb-4">
-          {currentTask === "task1" && (
-            <Task1PersonnelCars
-              onSubmit={handleSubmit}
-              isSubmitting={isSubmitting}
-              status={status}
-              lang={lang}
-            />
-          )}
-          {currentTask === "task2" && (
-            <Task2BikeParking
-              onSubmit={handleSubmit}
-              isSubmitting={isSubmitting}
-              status={status}
-              lang={lang}
-            />
-          )}
-          {currentTask === "task3" && (
-            <Task3PrintRooms
-              onSubmit={handleSubmit}
-              isSubmitting={isSubmitting}
-              status={status}
-              lang={lang}
-            />
-          )}
+        <div className="rounded-xl shadow-md p-4 bg-white dark:bg-gray-800 mx-4 mb-4">
+          {currentTask === "task1" && <Task1PersonnelCars lang={lang} />}
+          {currentTask === "task2" && <Task2BikeParking lang={lang} />}
+          {currentTask === "task3" && <Task3PrintRooms lang={lang} />}
           {currentTask === "history" && <HistoryView lang={lang} />}
           {currentTask === "settings" && (
-            <SettingsView lang={lang} setLang={setLang} />
+            <SettingsView
+              lang={lang}
+              setLang={setLang}
+              theme={theme}
+              setTheme={setTheme}
+              isVibrationEnabled={isVibrationEnabled}
+              setVibrationEnabled={setVibrationEnabled}
+            />
           )}
         </div>
 
@@ -1964,7 +2073,7 @@ export default function App() {
 
         <div className="text-center mt-6 mx-4">
           <div className="flex items-center justify-center gap-2">
-            <span className="text-xs text-gray-400">
+            <span className="text-xs text-gray-400 dark:text-gray-500">
               Work Statistics PWA v4.1.0 🚀
             </span>
           </div>
