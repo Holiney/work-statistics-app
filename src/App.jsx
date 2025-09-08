@@ -1681,7 +1681,7 @@ export default function App() {
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900 flex items-center justify-center gap-3">
               <span className="text-2xl">📊</span>
-              Статистика роботи 1.15V
+              Статистика роботи 1.151V
             </h1>
             <p className="text-sm text-gray-500 italic mt-2">
               Збір даних по персоналу, транспорту та канцелярії
