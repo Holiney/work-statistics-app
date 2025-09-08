@@ -1,5 +1,59 @@
 import React, { useState, useEffect, useCallback } from "react";
 
+const translations = {
+  ua: {
+    appTitle: "Статистика роботи 1.12V",
+    appDesc: "Збір даних по персоналу, транспорту та канцелярії",
+    chooseTask: "Оберіть завдання:",
+    personnel: "Персонал",
+    bikes: "Велосипеди",
+    office: "Канцелярія",
+    history: "Історія",
+    settings: "Налаштування",
+    save: "Зберегти",
+    edit: "Редагувати",
+    send: "Надіслати",
+    noData: "Немає збережених даних",
+    copy: "Копіювати",
+    copied: "Скопійовано!",
+  },
+  en: {
+    appTitle: "Work Statistics 1.12V",
+    appDesc: "Data collection for staff, transport and office supplies",
+    chooseTask: "Choose a task:",
+    personnel: "Personnel",
+    bikes: "Bikes",
+    office: "Office",
+    history: "History",
+    settings: "Settings",
+    save: "Save",
+    edit: "Edit",
+    send: "Send",
+    noData: "No saved data",
+    copy: "Copy",
+    copied: "Copied!",
+  },
+  nl: {
+    appTitle: "Werkstatistieken 1.12V",
+    appDesc: "Gegevens verzamelen over personeel, vervoer en kantoorartikelen",
+    chooseTask: "Kies een taak:",
+    personnel: "Personeel",
+    bikes: "Fietsen",
+    office: "Kantoor",
+    history: "Geschiedenis",
+    settings: "Instellingen",
+    save: "Opslaan",
+    edit: "Bewerken",
+    send: "Versturen",
+    noData: "Geen opgeslagen gegevens",
+    copy: "Kopiëren",
+    copied: "Gekopieerd!",
+  },
+};
+
+// допоміжна функція
+const t = (lang, key) => translations[lang][key] || key;
+
 // === Локалізація ===
 const LANGUAGES = {
   ua: {
@@ -1627,7 +1681,7 @@ export default function App() {
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900 flex items-center justify-center gap-3">
               <span className="text-2xl">📊</span>
-              Статистика роботи 1.13V
+              Статистика роботи 1.15V
             </h1>
             <p className="text-sm text-gray-500 italic mt-2">
               Збір даних по персоналу, транспорту та канцелярії
@@ -1650,7 +1704,9 @@ export default function App() {
             >
               <div className="flex flex-col items-center gap-1">
                 <span className="text-xl">👥</span>
-                <span className="text-xs font-medium">Персонал</span>
+                <span className="text-xs font-medium">
+                  {t(lang, "personnel")}
+                </span>
               </div>
             </button>
             <button
@@ -1663,7 +1719,7 @@ export default function App() {
             >
               <div className="flex flex-col items-center gap-1">
                 <span className="text-xl">🚴</span>
-                <span className="text-xs font-medium">Велосипеди</span>
+                <span className="text-xs font-medium">{t(lang, "bikes")}</span>
               </div>
             </button>
             <button
@@ -1676,7 +1732,7 @@ export default function App() {
             >
               <div className="flex flex-col items-center gap-1">
                 <span className="text-xl">🖨️</span>
-                <span className="text-xs font-medium">Канцелярія</span>
+                <span className="text-xs font-medium">{t(lang, "office")}</span>
               </div>
             </button>
             <button
@@ -1689,7 +1745,9 @@ export default function App() {
             >
               <div className="flex flex-col items-center gap-1">
                 <span className="text-xl">📚</span>
-                <span className="text-xs font-medium">Історія</span>
+                <span className="text-xs font-medium">
+                  {t(lang, "history")}
+                </span>
               </div>
             </button>
             <button
@@ -1703,7 +1761,7 @@ export default function App() {
               <div className="flex flex-col items-center gap-1">
                 <span className="text-xl">⚙️</span>
                 <span className="text-xs font-medium">
-                  {LANGUAGES[lang].settings}
+                  {t(lang, "settings")}
                 </span>
               </div>
             </button>
@@ -1716,6 +1774,7 @@ export default function App() {
               onSubmit={handleSubmit}
               isSubmitting={isSubmitting}
               status={status}
+              lang={lang}
             />
           )}
           {currentTask === "task2" && (
@@ -1723,6 +1782,7 @@ export default function App() {
               onSubmit={handleSubmit}
               isSubmitting={isSubmitting}
               status={status}
+              lang={lang}
             />
           )}
           {currentTask === "task3" && (
@@ -1730,6 +1790,7 @@ export default function App() {
               onSubmit={handleSubmit}
               isSubmitting={isSubmitting}
               status={status}
+              lang={lang}
             />
           )}
           {currentTask === "history" && <HistoryView lang={lang} />}
