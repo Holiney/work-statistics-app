@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 
+// === Повна локалізація ===
 const translations = {
   ua: {
-    appTitle: "Статистика роботи 1.12V",
+    // Основні
+    appTitle: "Статистика роботи",
     appDesc: "Збір даних по персоналу, транспорту та канцелярії",
     chooseTask: "Оберіть завдання:",
     personnel: "Персонал",
@@ -10,15 +12,80 @@ const translations = {
     office: "Канцелярія",
     history: "Історія",
     settings: "Налаштування",
+
+    // Дії
     save: "Зберегти",
     edit: "Редагувати",
     send: "Надіслати",
-    noData: "Немає збережених даних",
+    sending: "Надсилання...",
     copy: "Копіювати",
     copied: "Скопійовано!",
+    delete: "Видалити",
+    export: "Експорт",
+    install: "Встановити",
+    view: "Переглянути",
+
+    // Статуси
+    noData: "Немає збережених даних",
+    noDataToSave: "Немає даних для збереження",
+    dataEmpty: "Введіть хоча б одне значення",
+    dataSaved: "Дані збережено в історію!",
+    dataSavedToday: "Дані збережено на сьогодні",
+    editMode: "Режим редагування активовано",
+    successSent: "Успішно надіслано!",
+    error: "Помилка",
+    dataDeleted: "Дані видалено",
+    dataExported: "Дані експортовано",
+
+    // Форми
+    units: "одиниць",
+    add: "Додати",
+    subtract: "Відняти",
+
+    // Task 1
+    personnelByZones: "Персонал по зонах",
+    cars: "Автомобілі",
+    totalCars: "Всього автомобілів",
+    workersCount: "Кількість працівників в",
+    carsCount: "Кількість автомобілів",
+
+    // Task 2
+    bikesAndTransport: "Велосипеди та транспорт",
+    quantity: "Кількість",
+
+    // Task 3
+    officeSupplies: "Канцелярські товари",
+    room: "Кімната",
+
+    // Історія
+    historyTitle: "Історія збережених даних",
+    recordsFound: "Знайдено записів",
+    historyEmpty: "Історія порожня",
+    saveDataPrompt: "Збережіть дані в одному з завдань, щоб вони з'явились тут",
+    detailedView: "Детальний перегляд даних",
+    deleteConfirm: "Видалити всі дані за",
+
+    // PWA
+    pwaInstall: "Встановити додаток",
+    pwaInstallDesc: "Для кращого досвіду роботи",
+    pwaStatus: "PWA Статус",
+    online: "Онлайн",
+    offline: "Офлайн",
+    installed: "Встановлено",
+    inBrowser: "В браузері",
+    vibration: "Вібрація",
+    localStorage: "Локальне збереження",
+
+    // Налаштування
+    language: "Мова",
+    ukrainian: "Українська",
+    english: "English",
+    dutch: "Nederlands",
   },
+
   en: {
-    appTitle: "Work Statistics 1.12V",
+    // Basic
+    appTitle: "Work Statistics",
     appDesc: "Data collection for staff, transport and office supplies",
     chooseTask: "Choose a task:",
     personnel: "Personnel",
@@ -26,15 +93,80 @@ const translations = {
     office: "Office",
     history: "History",
     settings: "Settings",
+
+    // Actions
     save: "Save",
     edit: "Edit",
     send: "Send",
-    noData: "No saved data",
+    sending: "Sending...",
     copy: "Copy",
     copied: "Copied!",
+    delete: "Delete",
+    export: "Export",
+    install: "Install",
+    view: "View",
+
+    // Statuses
+    noData: "No saved data",
+    noDataToSave: "No data to save",
+    dataEmpty: "Enter at least one value",
+    dataSaved: "Data saved to history!",
+    dataSavedToday: "Data saved for today",
+    editMode: "Edit mode activated",
+    successSent: "Successfully sent!",
+    error: "Error",
+    dataDeleted: "Data deleted",
+    dataExported: "Data exported",
+
+    // Forms
+    units: "units",
+    add: "Add",
+    subtract: "Subtract",
+
+    // Task 1
+    personnelByZones: "Personnel by zones",
+    cars: "Cars",
+    totalCars: "Total cars",
+    workersCount: "Number of workers in",
+    carsCount: "Number of cars",
+
+    // Task 2
+    bikesAndTransport: "Bikes and transport",
+    quantity: "Quantity",
+
+    // Task 3
+    officeSupplies: "Office supplies",
+    room: "Room",
+
+    // History
+    historyTitle: "Saved data history",
+    recordsFound: "Records found",
+    historyEmpty: "History is empty",
+    saveDataPrompt: "Save data in one of the tasks to see it here",
+    detailedView: "Detailed data view",
+    deleteConfirm: "Delete all data for",
+
+    // PWA
+    pwaInstall: "Install app",
+    pwaInstallDesc: "For better experience",
+    pwaStatus: "PWA Status",
+    online: "Online",
+    offline: "Offline",
+    installed: "Installed",
+    inBrowser: "In browser",
+    vibration: "Vibration",
+    localStorage: "Local storage",
+
+    // Settings
+    language: "Language",
+    ukrainian: "Українська",
+    english: "English",
+    dutch: "Nederlands",
   },
+
   nl: {
-    appTitle: "Werkstatistieken 1.12V",
+    // Basis
+    appTitle: "Werkstatistieken",
     appDesc: "Gegevens verzamelen over personeel, vervoer en kantoorartikelen",
     chooseTask: "Kies een taak:",
     personnel: "Personeel",
@@ -42,53 +174,80 @@ const translations = {
     office: "Kantoor",
     history: "Geschiedenis",
     settings: "Instellingen",
+
+    // Acties
     save: "Opslaan",
     edit: "Bewerken",
     send: "Versturen",
+    sending: "Versturen...",
+    copy: "Kopiëren",
+    copied: "Gekopieerd!",
+    delete: "Verwijderen",
+    export: "Exporteren",
+    install: "Installeren",
+    view: "Bekijken",
+
+    // Statussen
     noData: "Geen opgeslagen gegevens",
-    copy: "Kopiëren",
-    copied: "Gekopieerd!",
-  },
-};
+    noDataToSave: "Geen gegevens om op te slaan",
+    dataEmpty: "Voer minimaal één waarde in",
+    dataSaved: "Gegevens opgeslagen in geschiedenis!",
+    dataSavedToday: "Gegevens opgeslagen voor vandaag",
+    editMode: "Bewerkingsmodus geactiveerd",
+    successSent: "Succesvol verzonden!",
+    error: "Fout",
+    dataDeleted: "Gegevens verwijderd",
+    dataExported: "Gegevens geëxporteerd",
 
-// допоміжна функція
-const t = (lang, key) => translations[lang][key] || key;
+    // Formulieren
+    units: "eenheden",
+    add: "Toevoegen",
+    subtract: "Aftrekken",
 
-// === Локалізація ===
-const LANGUAGES = {
-  ua: {
-    settings: "Налаштування",
-    language: "Мова",
-    copy: "Копіювати",
-    copied: "Скопійовано!",
-  },
-  en: {
-    settings: "Settings",
-    language: "Language",
-    copy: "Copy",
-    copied: "Copied!",
-  },
-  nl: {
-    settings: "Instellingen",
+    // Taak 1
+    personnelByZones: "Personeel per zone",
+    cars: "Auto's",
+    totalCars: "Totaal auto's",
+    workersCount: "Aantal werknemers in",
+    carsCount: "Aantal auto's",
+
+    // Taak 2
+    bikesAndTransport: "Fietsen en vervoer",
+    quantity: "Hoeveelheid",
+
+    // Taak 3
+    officeSupplies: "Kantoorartikelen",
+    room: "Kamer",
+
+    // Geschiedenis
+    historyTitle: "Geschiedenis opgeslagen gegevens",
+    recordsFound: "Records gevonden",
+    historyEmpty: "Geschiedenis is leeg",
+    saveDataPrompt: "Sla gegevens op in een van de taken om ze hier te zien",
+    detailedView: "Gedetailleerde weergave",
+    deleteConfirm: "Verwijder alle gegevens voor",
+
+    // PWA
+    pwaInstall: "App installeren",
+    pwaInstallDesc: "Voor een betere ervaring",
+    pwaStatus: "PWA Status",
+    online: "Online",
+    offline: "Offline",
+    installed: "Geïnstalleerd",
+    inBrowser: "In browser",
+    vibration: "Trillen",
+    localStorage: "Lokale opslag",
+
+    // Instellingen
     language: "Taal",
-    copy: "Kopiëren",
-    copied: "Gekopieerd!",
+    ukrainian: "Українська",
+    english: "English",
+    dutch: "Nederlands",
   },
 };
 
-// === Функція копіювання ===
-const copyToClipboard = (text) => {
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(text);
-  } else {
-    const textarea = document.createElement("textarea");
-    textarea.value = text;
-    document.body.appendChild(textarea);
-    textarea.select();
-    document.execCommand("copy");
-    document.body.removeChild(textarea);
-  }
-};
+// Helper function for translations
+const t = (lang, key) => translations[lang]?.[key] || key;
 
 // Constants
 const PERSONNEL_ZONES = [
@@ -195,9 +354,10 @@ const getTodayKey = () => {
   return today.toISOString().slice(0, 10);
 };
 
-const formatDate = (dateStr) => {
+const formatDate = (dateStr, lang = "ua") => {
   const date = new Date(dateStr);
-  return date.toLocaleDateString("uk-UA", {
+  const locale = lang === "ua" ? "uk-UA" : lang === "nl" ? "nl-NL" : "en-US";
+  return date.toLocaleDateString(locale, {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -235,13 +395,26 @@ const getDataForDate = (date, task) => {
   return data;
 };
 
+// Copy to clipboard function
+const copyToClipboard = (text) => {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text);
+  } else {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand("copy");
+    document.body.removeChild(textarea);
+  }
+};
+
 // PWA Install Banner Component
-const PWAInstallBanner = () => {
+const PWAInstallBanner = ({ lang }) => {
   const [showInstallBanner, setShowInstallBanner] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
 
   useEffect(() => {
-    // Check if already installed
     const isStandalone =
       window.matchMedia("(display-mode: standalone)").matches ||
       window.navigator.standalone === true;
@@ -251,7 +424,6 @@ const PWAInstallBanner = () => {
       return;
     }
 
-    // Listen for install prompt
     const handleInstallPrompt = () => {
       setShowInstallBanner(true);
     };
@@ -292,8 +464,8 @@ const PWAInstallBanner = () => {
         <div className="flex items-center gap-3">
           <span className="text-2xl">📱</span>
           <div>
-            <h3 className="font-semibold">Встановити додаток</h3>
-            <p className="text-sm opacity-90">Для кращого досвіду роботи</p>
+            <h3 className="font-semibold">{t(lang, "pwaInstall")}</h3>
+            <p className="text-sm opacity-90">{t(lang, "pwaInstallDesc")}</p>
           </div>
         </div>
         <div className="flex gap-2">
@@ -301,7 +473,7 @@ const PWAInstallBanner = () => {
             onClick={handleInstall}
             className="px-4 py-2 bg-white text-blue-600 rounded-lg font-semibold text-sm hover:bg-gray-100 transition"
           >
-            Встановити
+            {t(lang, "install")}
           </button>
           <button
             onClick={handleDismiss}
@@ -315,7 +487,7 @@ const PWAInstallBanner = () => {
   );
 };
 
-// Toast Component with Vibration
+// Toast Component
 const Toast = ({ message, isVisible, onClose, type = "success" }) => {
   useEffect(() => {
     if (isVisible) {
@@ -350,7 +522,7 @@ const Toast = ({ message, isVisible, onClose, type = "success" }) => {
   );
 };
 
-// Bottom Sheet with Vibration
+// Bottom Sheet
 const BottomSheet = ({ isOpen, onClose, title, children }) => {
   useEffect(() => {
     if (isOpen) {
@@ -391,8 +563,8 @@ const BottomSheet = ({ isOpen, onClose, title, children }) => {
   );
 };
 
-// Enhanced Counter Component with Vibration
-const Counter = ({ value, onChange, label }) => {
+// Counter Component
+const Counter = ({ value, onChange, label, lang }) => {
   const handleIncrease = () => {
     if (value < 999) {
       vibrateDevice("counterIncrease");
@@ -413,7 +585,9 @@ const Counter = ({ value, onChange, label }) => {
         <h2 className="text-xl font-semibold text-gray-700 mb-4">{label}</h2>
         <div className="rounded-xl shadow-md p-4 bg-white border">
           <span className="text-5xl font-bold text-blue-600">{value}</span>
-          <p className="text-sm text-gray-500 italic mt-2">одиниць</p>
+          <p className="text-sm text-gray-500 italic mt-2">
+            {t(lang, "units")}
+          </p>
         </div>
       </div>
       <div className="space-y-4">
@@ -422,29 +596,31 @@ const Counter = ({ value, onChange, label }) => {
           className="w-full h-20 bg-green-500 hover:bg-green-600 active:bg-green-700 text-white rounded-xl shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold text-lg flex items-center justify-center gap-2"
         >
           <span className="text-2xl">➕</span>
-          Додати
+          {t(lang, "add")}
         </button>
         <button
           onClick={handleDecrease}
           className="w-full h-16 bg-red-500 hover:bg-red-600 active:bg-red-700 text-white rounded-xl shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold flex items-center justify-center gap-2"
         >
           <span className="text-xl">➖</span>
-          Відняти
+          {t(lang, "subtract")}
         </button>
       </div>
     </div>
   );
 };
 
-// Enhanced Number Grid Component with Vibration
-const NumberGrid = ({ value, onChange, label, onClose }) => {
+// Number Grid Component
+const NumberGrid = ({ value, onChange, label, onClose, lang }) => {
   return (
     <div className="flex flex-col">
       <div className="text-center mb-6">
         <h2 className="text-xl font-semibold text-gray-700 mb-4">{label}</h2>
         <div className="rounded-xl shadow-md p-4 bg-white border">
           <span className="text-5xl font-bold text-purple-600">{value}</span>
-          <p className="text-sm text-gray-500 italic mt-2">одиниць</p>
+          <p className="text-sm text-gray-500 italic mt-2">
+            {t(lang, "units")}
+          </p>
         </div>
       </div>
       <div className="grid grid-cols-5 gap-3">
@@ -470,8 +646,8 @@ const NumberGrid = ({ value, onChange, label, onClose }) => {
   );
 };
 
-// Enhanced Task 1: Personnel & Cars with Vibration
-const Task1PersonnelCars = ({ onSubmit, isSubmitting, status }) => {
+// Task 1: Personnel & Cars
+const Task1PersonnelCars = ({ onSubmit, isSubmitting, status, lang }) => {
   const [personnelData, setPersonnelData] = useState({});
   const [carsCount, setCarsCount] = useState(0);
   const [selectedZone, setSelectedZone] = useState(null);
@@ -516,7 +692,7 @@ const Task1PersonnelCars = ({ onSubmit, isSubmitting, status }) => {
     const hasData =
       Object.values(personnelData).some((count) => count > 0) || carsCount > 0;
     if (!hasData) {
-      showToast("Немає даних для збереження", "error");
+      showToast(t(lang, "noDataToSave"), "error");
       return;
     }
 
@@ -526,13 +702,13 @@ const Task1PersonnelCars = ({ onSubmit, isSubmitting, status }) => {
 
     setIsSaved(true);
     vibrateDevice("save");
-    showToast("Дані збережено в історію!");
+    showToast(t(lang, "dataSaved"));
   };
 
   const handleEdit = () => {
     setIsSaved(false);
     vibrateDevice("light");
-    showToast("Режим редагування активовано");
+    showToast(t(lang, "editMode"));
   };
 
   const handleSubmit = () => {
@@ -546,7 +722,7 @@ const Task1PersonnelCars = ({ onSubmit, isSubmitting, status }) => {
       entries.push({ zone: "Parking", type: "Cars", count: carsCount });
     }
     if (entries.length === 0) {
-      showToast("Введіть хоча б одне значення", "error");
+      showToast(t(lang, "dataEmpty"), "error");
       return;
     }
     vibrateDevice("medium");
@@ -569,7 +745,7 @@ const Task1PersonnelCars = ({ onSubmit, isSubmitting, status }) => {
       <div className="rounded-xl shadow-md p-4 bg-white space-y-4">
         <h2 className="text-xl font-semibold text-gray-700 flex items-center gap-2">
           <span className="text-xl">👥</span>
-          Персонал по зонах
+          {t(lang, "personnelByZones")}
         </h2>
         <div className="space-y-3">
           {PERSONNEL_ZONES.map((zone) => (
@@ -606,7 +782,7 @@ const Task1PersonnelCars = ({ onSubmit, isSubmitting, status }) => {
       <div className="rounded-xl shadow-md p-4 bg-white space-y-4">
         <h2 className="text-xl font-semibold text-gray-700 flex items-center gap-2">
           <span className="text-xl">🚗</span>
-          Автомобілі
+          {t(lang, "cars")}
         </h2>
         <button
           onClick={() => {
@@ -622,7 +798,7 @@ const Task1PersonnelCars = ({ onSubmit, isSubmitting, status }) => {
               : "bg-green-50 hover:bg-green-100 active:bg-green-200 text-green-800"
           }`}
         >
-          <span className="font-medium">Всього автомобілів</span>
+          <span className="font-medium">{t(lang, "totalCars")}</span>
           <span
             className={`px-3 py-1 rounded-lg text-sm font-bold ${
               isSaved ? "bg-gray-300 text-gray-500" : "bg-green-600 text-white"
@@ -640,14 +816,14 @@ const Task1PersonnelCars = ({ onSubmit, isSubmitting, status }) => {
             className="w-full bg-green-500 hover:bg-green-600 active:bg-green-700 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold flex items-center justify-center gap-2"
           >
             <span className="text-xl">💾</span>
-            Зберегти
+            {t(lang, "save")}
           </button>
         ) : (
           <div className="space-y-3">
             <div className="flex items-center gap-2 p-3 bg-green-50 border-l-4 border-green-400 rounded-lg">
               <span className="text-xl">✅</span>
               <span className="text-green-800 font-medium">
-                Дані збережено на сьогодні
+                {t(lang, "dataSavedToday")}
               </span>
             </div>
             <button
@@ -655,7 +831,7 @@ const Task1PersonnelCars = ({ onSubmit, isSubmitting, status }) => {
               className="w-full bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold flex items-center justify-center gap-2"
             >
               <span className="text-xl">✏️</span>
-              Редагувати
+              {t(lang, "edit")}
             </button>
           </div>
         )}
@@ -666,7 +842,7 @@ const Task1PersonnelCars = ({ onSubmit, isSubmitting, status }) => {
           className="w-full bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
         >
           <span className="text-xl">📤</span>
-          {isSubmitting ? "Надсилання..." : "Надіслати"}
+          {isSubmitting ? t(lang, "sending") : t(lang, "send")}
         </button>
       </div>
 
@@ -680,8 +856,8 @@ const Task1PersonnelCars = ({ onSubmit, isSubmitting, status }) => {
         >
           <span className="font-medium">
             {status.success
-              ? "✅ Успішно надіслано!"
-              : `❌ Помилка: ${status.error}`}
+              ? `✅ ${t(lang, "successSent")}`
+              : `❌ ${t(lang, "error")}: ${status.error}`}
           </span>
         </div>
       )}
@@ -695,13 +871,15 @@ const Task1PersonnelCars = ({ onSubmit, isSubmitting, status }) => {
           <Counter
             value={personnelData[selectedZone] || 0}
             onChange={(count) => updatePersonnel(selectedZone, count)}
-            label={`Кількість працівників в ${selectedZone}`}
+            label={`${t(lang, "workersCount")} ${selectedZone}`}
+            lang={lang}
           />
         ) : selectedZone === "Parking" ? (
           <Counter
             value={carsCount}
             onChange={(count) => !isSaved && setCarsCount(count)}
-            label="Кількість автомобілів"
+            label={t(lang, "carsCount")}
+            lang={lang}
           />
         ) : null}
       </BottomSheet>
@@ -709,8 +887,8 @@ const Task1PersonnelCars = ({ onSubmit, isSubmitting, status }) => {
   );
 };
 
-// Enhanced Task 2: Bike Parking with Vibration
-const Task2BikeParking = ({ onSubmit, isSubmitting, status }) => {
+// Task 2: Bike Parking
+const Task2BikeParking = ({ onSubmit, isSubmitting, status, lang }) => {
   const [bikeData, setBikeData] = useState({});
   const [selectedBikeType, setSelectedBikeType] = useState(null);
   const [toast, setToast] = useState({
@@ -747,7 +925,7 @@ const Task2BikeParking = ({ onSubmit, isSubmitting, status }) => {
   const handleSave = () => {
     const hasData = Object.values(bikeData).some((count) => count > 0);
     if (!hasData) {
-      showToast("Немає даних для збереження", "error");
+      showToast(t(lang, "noDataToSave"), "error");
       return;
     }
 
@@ -756,13 +934,13 @@ const Task2BikeParking = ({ onSubmit, isSubmitting, status }) => {
 
     setIsSaved(true);
     vibrateDevice("save");
-    showToast("Дані збережено в історію!");
+    showToast(t(lang, "dataSaved"));
   };
 
   const handleEdit = () => {
     setIsSaved(false);
     vibrateDevice("light");
-    showToast("Режим редагування активовано");
+    showToast(t(lang, "editMode"));
   };
 
   const handleSubmit = () => {
@@ -773,7 +951,7 @@ const Task2BikeParking = ({ onSubmit, isSubmitting, status }) => {
       }
     });
     if (entries.length === 0) {
-      showToast("Введіть хоча б одне значення", "error");
+      showToast(t(lang, "dataEmpty"), "error");
       return;
     }
     vibrateDevice("medium");
@@ -796,7 +974,7 @@ const Task2BikeParking = ({ onSubmit, isSubmitting, status }) => {
       <div className="rounded-xl shadow-md p-4 bg-white space-y-4">
         <h2 className="text-xl font-semibold text-gray-700 flex items-center gap-2">
           <span className="text-xl">🚴</span>
-          Велосипеди та транспорт
+          {t(lang, "bikesAndTransport")}
         </h2>
         <div className="space-y-3">
           {BIKE_TYPES.map((type) => (
@@ -837,14 +1015,14 @@ const Task2BikeParking = ({ onSubmit, isSubmitting, status }) => {
             className="w-full bg-green-500 hover:bg-green-600 active:bg-green-700 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold flex items-center justify-center gap-2"
           >
             <span className="text-xl">💾</span>
-            Зберегти
+            {t(lang, "save")}
           </button>
         ) : (
           <div className="space-y-3">
             <div className="flex items-center gap-2 p-3 bg-green-50 border-l-4 border-green-400 rounded-lg">
               <span className="text-xl">✅</span>
               <span className="text-green-800 font-medium">
-                Дані збережено на сьогодні
+                {t(lang, "dataSavedToday")}
               </span>
             </div>
             <button
@@ -852,7 +1030,7 @@ const Task2BikeParking = ({ onSubmit, isSubmitting, status }) => {
               className="w-full bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold flex items-center justify-center gap-2"
             >
               <span className="text-xl">✏️</span>
-              Редагувати
+              {t(lang, "edit")}
             </button>
           </div>
         )}
@@ -863,7 +1041,7 @@ const Task2BikeParking = ({ onSubmit, isSubmitting, status }) => {
           className="w-full bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
         >
           <span className="text-xl">📤</span>
-          {isSubmitting ? "Надсилання..." : "Надіслати"}
+          {isSubmitting ? t(lang, "sending") : t(lang, "send")}
         </button>
       </div>
 
@@ -877,8 +1055,8 @@ const Task2BikeParking = ({ onSubmit, isSubmitting, status }) => {
         >
           <span className="font-medium">
             {status.success
-              ? "✅ Успішно надіслано!"
-              : `❌ Помилка: ${status.error}`}
+              ? `✅ ${t(lang, "successSent")}`
+              : `❌ ${t(lang, "error")}: ${status.error}`}
           </span>
         </div>
       )}
@@ -892,7 +1070,8 @@ const Task2BikeParking = ({ onSubmit, isSubmitting, status }) => {
           <Counter
             value={bikeData[selectedBikeType] || 0}
             onChange={(count) => updateBike(selectedBikeType, count)}
-            label={`Кількість: ${selectedBikeType}`}
+            label={`${t(lang, "quantity")}: ${selectedBikeType}`}
+            lang={lang}
           />
         )}
       </BottomSheet>
@@ -900,8 +1079,8 @@ const Task2BikeParking = ({ onSubmit, isSubmitting, status }) => {
   );
 };
 
-// Enhanced Task 3: Print Rooms with Vibration
-const Task3PrintRooms = ({ onSubmit, isSubmitting, status }) => {
+// Task 3: Print Rooms
+const Task3PrintRooms = ({ onSubmit, isSubmitting, status, lang }) => {
   const [selectedRoom, setSelectedRoom] = useState(PRINT_ROOMS[0]);
   const [printData, setPrintData] = useState({});
   const [selectedItem, setSelectedItem] = useState(null);
@@ -941,7 +1120,7 @@ const Task3PrintRooms = ({ onSubmit, isSubmitting, status }) => {
   const handleSave = () => {
     const hasData = Object.values(printData).some((count) => count > 0);
     if (!hasData) {
-      showToast("Немає даних для збереження", "error");
+      showToast(t(lang, "noDataToSave"), "error");
       return;
     }
 
@@ -949,13 +1128,13 @@ const Task3PrintRooms = ({ onSubmit, isSubmitting, status }) => {
     saveToStorage(`task3-data-${todayKey}-${selectedRoom}`, printData);
     setIsSaved(true);
     vibrateDevice("save");
-    showToast("Дані збережено в історію!");
+    showToast(t(lang, "dataSaved"));
   };
 
   const handleEdit = () => {
     setIsSaved(false);
     vibrateDevice("light");
-    showToast("Режим редагування активовано");
+    showToast(t(lang, "editMode"));
   };
 
   const handleSubmit = () => {
@@ -966,7 +1145,7 @@ const Task3PrintRooms = ({ onSubmit, isSubmitting, status }) => {
       }
     });
     if (entries.length === 0) {
-      showToast("Введіть хоча б одне значення", "error");
+      showToast(t(lang, "dataEmpty"), "error");
       return;
     }
     vibrateDevice("medium");
@@ -990,7 +1169,7 @@ const Task3PrintRooms = ({ onSubmit, isSubmitting, status }) => {
       <div className="rounded-xl shadow-md p-4 bg-white space-y-4">
         <h2 className="text-xl font-semibold text-gray-700 flex items-center gap-2">
           <span className="text-xl">🖨️</span>
-          Канцелярські товари
+          {t(lang, "officeSupplies")}
         </h2>
 
         <div className="grid grid-cols-4 gap-2">
@@ -1054,14 +1233,14 @@ const Task3PrintRooms = ({ onSubmit, isSubmitting, status }) => {
             className="w-full bg-green-500 hover:bg-green-600 active:bg-green-700 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold flex items-center justify-center gap-2"
           >
             <span className="text-xl">💾</span>
-            Зберегти
+            {t(lang, "save")}
           </button>
         ) : (
           <div className="space-y-3">
             <div className="flex items-center gap-2 p-3 bg-green-50 border-l-4 border-green-400 rounded-lg">
               <span className="text-xl">✅</span>
               <span className="text-green-800 font-medium">
-                Дані збережено на сьогодні
+                {t(lang, "dataSavedToday")}
               </span>
             </div>
             <button
@@ -1069,7 +1248,7 @@ const Task3PrintRooms = ({ onSubmit, isSubmitting, status }) => {
               className="w-full bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold flex items-center justify-center gap-2"
             >
               <span className="text-xl">✏️</span>
-              Редагувати
+              {t(lang, "edit")}
             </button>
           </div>
         )}
@@ -1080,7 +1259,7 @@ const Task3PrintRooms = ({ onSubmit, isSubmitting, status }) => {
           className="w-full bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
         >
           <span className="text-xl">📤</span>
-          {isSubmitting ? "Надсилання..." : "Надіслати"}
+          {isSubmitting ? t(lang, "sending") : t(lang, "send")}
         </button>
       </div>
 
@@ -1094,8 +1273,8 @@ const Task3PrintRooms = ({ onSubmit, isSubmitting, status }) => {
         >
           <span className="font-medium">
             {status.success
-              ? "✅ Успішно надіслано!"
-              : `❌ Помилка: ${status.error}`}
+              ? `✅ ${t(lang, "successSent")}`
+              : `❌ ${t(lang, "error")}: ${status.error}`}
           </span>
         </div>
       )}
@@ -1109,8 +1288,9 @@ const Task3PrintRooms = ({ onSubmit, isSubmitting, status }) => {
           <NumberGrid
             value={printData[selectedItem] || 0}
             onChange={(count) => updateItem(selectedItem, count)}
-            label={`Кількість: ${selectedItem}`}
+            label={`${t(lang, "quantity")}: ${selectedItem}`}
             onClose={() => setSelectedItem(null)}
+            lang={lang}
           />
         )}
       </BottomSheet>
@@ -1119,7 +1299,7 @@ const Task3PrintRooms = ({ onSubmit, isSubmitting, status }) => {
 };
 
 // History Detail View
-const HistoryDetailView = ({ date, onBack }) => {
+const HistoryDetailView = ({ date, onBack, lang }) => {
   const [selectedTask, setSelectedTask] = useState("task1");
 
   const task1Data = getDataForDate(date, "task1");
@@ -1133,7 +1313,7 @@ const HistoryDetailView = ({ date, onBack }) => {
     const hasCarsData = task1Data.cars > 0;
 
     if (!hasPersonnelData && !hasCarsData) {
-      return <div className="text-gray-500 italic">Немає збережених даних</div>;
+      return <div className="text-gray-500 italic">{t(lang, "noData")}</div>;
     }
 
     return (
@@ -1141,7 +1321,7 @@ const HistoryDetailView = ({ date, onBack }) => {
         {hasPersonnelData && (
           <div>
             <h4 className="font-semibold text-blue-700 mb-2">
-              Персонал по зонах:
+              {t(lang, "personnelByZones")}:
             </h4>
             <div className="space-y-2">
               {Object.entries(task1Data.personnel).map(
@@ -1162,9 +1342,11 @@ const HistoryDetailView = ({ date, onBack }) => {
 
         {hasCarsData && (
           <div>
-            <h4 className="font-semibold text-green-700 mb-2">Автомобілі:</h4>
+            <h4 className="font-semibold text-green-700 mb-2">
+              {t(lang, "cars")}:
+            </h4>
             <div className="flex justify-between items-center p-2 bg-green-50 rounded-lg">
-              <span>Всього автомобілів</span>
+              <span>{t(lang, "totalCars")}</span>
               <span className="font-bold text-green-600">{task1Data.cars}</span>
             </div>
           </div>
@@ -1173,46 +1355,17 @@ const HistoryDetailView = ({ date, onBack }) => {
     );
   };
 
-  // const renderTask2Data = () => {
-  //   const hasData = Object.values(task2Data.bikes || {}).some(
-  //     (count) => count > 0
-  //   );
-
-  //   if (!hasData) {
-  //     return <div className="text-gray-500 italic">Немає збережених даних</div>;
-  //   }
-
-  //   return (
-  //     <div className="space-y-2">
-  //       <h4 className="font-semibold text-orange-700 mb-2">
-  //         Велосипеди та транспорт:
-  //       </h4>
-  //       {Object.entries(task2Data.bikes).map(
-  //         ([type, count]) =>
-  //           count > 0 && (
-  //             <div
-  //               key={type}
-  //               className="flex justify-between items-center p-2 bg-orange-50 rounded-lg"
-  //             >
-  //               <span>{type}</span>
-  //               <span className="font-bold text-orange-600">{count}</span>
-  //             </div>
-  //           )
-  //       )}
-  //     </div>
-  //   );
-  // };
   const renderTask2Data = () => {
     const entries = Object.entries(task2Data.bikes || {}).filter(
       ([_, c]) => c > 0
     );
     if (entries.length === 0)
-      return <div className="text-gray-500 italic">Немає збережених даних</div>;
+      return <div className="text-gray-500 italic">{t(lang, "noData")}</div>;
 
     return (
       <div className="space-y-2">
         <h4 className="font-semibold text-orange-700 mb-2">
-          Велосипеди та транспорт:
+          {t(lang, "bikesAndTransport")}:
         </h4>
         {entries.map(([type, count]) => (
           <div
@@ -1229,17 +1382,17 @@ const HistoryDetailView = ({ date, onBack }) => {
             const text = `${new Date(date).toLocaleDateString("uk-UA", {
               day: "2-digit",
               month: "2-digit",
-            })}\nВелосипеди:`;
+            })}\n${t(lang, "bikes")}:`;
             const formatted = entries.reduce(
               (acc, [label, val]) => acc + `\n${label}: ${val}`,
               text
             );
             copyToClipboard(formatted);
-            alert(LANGUAGES[lang].copied); // можеш замінити на toast
+            alert(t(lang, "copied"));
           }}
           className="mt-2 w-full bg-indigo-500 hover:bg-indigo-600 text-white py-2 rounded-lg"
         >
-          📋 {LANGUAGES[lang].copy}
+          📋 {t(lang, "copy")}
         </button>
       </div>
     );
@@ -1251,13 +1404,13 @@ const HistoryDetailView = ({ date, onBack }) => {
     );
 
     if (!hasData) {
-      return <div className="text-gray-500 italic">Немає збережених даних</div>;
+      return <div className="text-gray-500 italic">{t(lang, "noData")}</div>;
     }
 
     return (
       <div className="space-y-4">
         <h4 className="font-semibold text-purple-700 mb-2">
-          Канцелярські товари:
+          {t(lang, "officeSupplies")}:
         </h4>
         {Object.entries(task3Data).map(([room, roomData]) => {
           const hasRoomData = Object.values(roomData || {}).some(
@@ -1267,7 +1420,9 @@ const HistoryDetailView = ({ date, onBack }) => {
 
           return (
             <div key={room} className="space-y-2">
-              <h5 className="font-medium text-purple-600">Кімната {room}:</h5>
+              <h5 className="font-medium text-purple-600">
+                {t(lang, "room")} {room}:
+              </h5>
               <div className="space-y-1 ml-4">
                 {Object.entries(roomData).map(
                   ([item, count]) =>
@@ -1305,9 +1460,9 @@ const HistoryDetailView = ({ date, onBack }) => {
         </button>
         <div>
           <h2 className="text-xl font-semibold text-gray-900">
-            {formatDate(date)}
+            {formatDate(date, lang)}
           </h2>
-          <p className="text-sm text-gray-500">Детальний перегляд даних</p>
+          <p className="text-sm text-gray-500">{t(lang, "detailedView")}</p>
         </div>
       </div>
 
@@ -1325,7 +1480,7 @@ const HistoryDetailView = ({ date, onBack }) => {
         >
           <div className="flex flex-col items-center gap-1">
             <span className="text-xl">👥</span>
-            <span className="text-xs font-medium">Персонал</span>
+            <span className="text-xs font-medium">{t(lang, "personnel")}</span>
           </div>
         </button>
         <button
@@ -1341,7 +1496,7 @@ const HistoryDetailView = ({ date, onBack }) => {
         >
           <div className="flex flex-col items-center gap-1">
             <span className="text-xl">🚴</span>
-            <span className="text-xs font-medium">Велосипеди</span>
+            <span className="text-xs font-medium">{t(lang, "bikes")}</span>
           </div>
         </button>
         <button
@@ -1357,7 +1512,7 @@ const HistoryDetailView = ({ date, onBack }) => {
         >
           <div className="flex flex-col items-center gap-1">
             <span className="text-xl">🖨️</span>
-            <span className="text-xs font-medium">Канцелярія</span>
+            <span className="text-xs font-medium">{t(lang, "office")}</span>
           </div>
         </button>
       </div>
@@ -1371,8 +1526,8 @@ const HistoryDetailView = ({ date, onBack }) => {
   );
 };
 
-// Enhanced History View with Vibration
-const HistoryView = () => {
+// History View
+const HistoryView = ({ lang }) => {
   const [savedDates, setSavedDates] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
   const [toast, setToast] = useState({
@@ -1396,7 +1551,9 @@ const HistoryView = () => {
 
   const handleDeleteDate = (date) => {
     vibrateDevice("buttonPress");
-    if (window.confirm(`Видалити всі дані за ${formatDate(date)}?`)) {
+    if (
+      window.confirm(`${t(lang, "deleteConfirm")} ${formatDate(date, lang)}?`)
+    ) {
       vibrateDevice("delete");
       const keysToDelete = [];
       for (let i = 0; i < localStorage.length; i++) {
@@ -1410,7 +1567,7 @@ const HistoryView = () => {
 
       const updatedDates = getAllSavedDates();
       setSavedDates(updatedDates);
-      showToast("Дані видалено");
+      showToast(t(lang, "dataDeleted"));
     }
   };
 
@@ -1436,7 +1593,7 @@ const HistoryView = () => {
     link.click();
     URL.revokeObjectURL(url);
     vibrateDevice("success");
-    showToast("Дані експортовано");
+    showToast(t(lang, "dataExported"));
   };
 
   if (selectedDate) {
@@ -1444,6 +1601,7 @@ const HistoryView = () => {
       <HistoryDetailView
         date={selectedDate}
         onBack={() => setSelectedDate(null)}
+        lang={lang}
       />
     );
   }
@@ -1461,10 +1619,10 @@ const HistoryView = () => {
         <div>
           <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
             <span className="text-xl">📚</span>
-            Історія збережених даних
+            {t(lang, "historyTitle")}
           </h2>
           <p className="text-sm text-gray-500 mt-1">
-            Знайдено записів: {savedDates.length}
+            {t(lang, "recordsFound")}: {savedDates.length}
           </p>
         </div>
 
@@ -1474,7 +1632,7 @@ const HistoryView = () => {
             className="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 text-white rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform font-medium flex items-center gap-2"
           >
             <span className="text-lg">📄</span>
-            Експорт
+            {t(lang, "export")}
           </button>
         )}
       </div>
@@ -1483,11 +1641,9 @@ const HistoryView = () => {
         <div className="text-center py-12">
           <span className="text-6xl text-gray-300 mb-4 block">📚</span>
           <h3 className="text-lg font-semibold text-gray-600 mb-2">
-            Історія порожня
+            {t(lang, "historyEmpty")}
           </h3>
-          <p className="text-gray-500">
-            Збережіть дані в одному з завдань, щоб вони з'явились тут
-          </p>
+          <p className="text-gray-500">{t(lang, "saveDataPrompt")}</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -1499,7 +1655,7 @@ const HistoryView = () => {
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <h3 className="font-semibold text-gray-900">
-                    {formatDate(date)}
+                    {formatDate(date, lang)}
                   </h3>
                   <p className="text-sm text-gray-500 mt-1">{date}</p>
                 </div>
@@ -1513,7 +1669,7 @@ const HistoryView = () => {
                     className="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 text-white rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform font-medium flex items-center gap-2"
                   >
                     <span className="text-lg">👁️</span>
-                    Переглянути
+                    {t(lang, "view")}
                   </button>
 
                   <button
@@ -1533,7 +1689,7 @@ const HistoryView = () => {
 };
 
 // PWA Status Component
-const PWAStatus = () => {
+const PWAStatus = ({ lang }) => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [isInstalled, setIsInstalled] = useState(false);
 
@@ -1544,7 +1700,6 @@ const PWAStatus = () => {
     window.addEventListener("online", handleOnline);
     window.addEventListener("offline", handleOffline);
 
-    // Check if installed
     const isStandalone =
       window.matchMedia("(display-mode: standalone)").matches ||
       window.navigator.standalone === true;
@@ -1559,7 +1714,7 @@ const PWAStatus = () => {
   return (
     <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-xl shadow-md p-4 mx-4 mb-4">
       <h3 className="font-semibold text-indigo-800 mb-3 flex items-center gap-2">
-        📱 PWA Статус:
+        📱 {t(lang, "pwaStatus")}:
       </h3>
       <div className="grid grid-cols-2 gap-4 text-sm">
         <div className="flex items-center gap-2">
@@ -1569,7 +1724,7 @@ const PWAStatus = () => {
             }`}
           ></span>
           <span className="text-gray-700">
-            {isOnline ? "Онлайн" : "Офлайн"}
+            {isOnline ? t(lang, "online") : t(lang, "offline")}
           </span>
         </div>
         <div className="flex items-center gap-2">
@@ -1579,47 +1734,53 @@ const PWAStatus = () => {
             }`}
           ></span>
           <span className="text-gray-700">
-            {isInstalled ? "Встановлено" : "В браузері"}
+            {isInstalled ? t(lang, "installed") : t(lang, "inBrowser")}
           </span>
         </div>
         <div className="flex items-center gap-2">
           <span className="w-3 h-3 bg-green-500 rounded-full"></span>
-          <span className="text-gray-700">Вібрація</span>
+          <span className="text-gray-700">{t(lang, "vibration")}</span>
         </div>
         <div className="flex items-center gap-2">
           <span className="w-3 h-3 bg-green-500 rounded-full"></span>
-          <span className="text-gray-700">Локальне збереження</span>
+          <span className="text-gray-700">{t(lang, "localStorage")}</span>
         </div>
       </div>
     </div>
   );
 };
 
-// === Налаштування ===
+// Settings View
 const SettingsView = ({ lang, setLang }) => (
   <div className="space-y-4">
-    <h2 className="text-xl font-semibold">⚙️ {LANGUAGES[lang].settings}</h2>
+    <h2 className="text-xl font-semibold">⚙️ {t(lang, "settings")}</h2>
     <label className="block text-sm text-gray-600 mb-2">
-      {LANGUAGES[lang].language}:
+      {t(lang, "language")}:
     </label>
     <select
       value={lang}
-      onChange={(e) => setLang(e.target.value)}
+      onChange={(e) => {
+        vibrateDevice("buttonPress");
+        setLang(e.target.value);
+        saveToStorage("app-language", e.target.value);
+      }}
       className="w-full p-2 border rounded-lg"
     >
-      <option value="ua">Українська</option>
-      <option value="en">English</option>
-      <option value="nl">Nederlands</option>
+      <option value="ua">{t(lang, "ukrainian")}</option>
+      <option value="en">{t(lang, "english")}</option>
+      <option value="nl">{t(lang, "dutch")}</option>
     </select>
   </div>
 );
 
-// Main App Component with PWA Features
+// Main App Component
 export default function App() {
   const [currentTask, setCurrentTask] = useState("task3");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState(null);
-  const [lang, setLang] = useState("ua");
+  const [lang, setLang] = useState(() => {
+    return loadFromStorage("app-language", "ua");
+  });
 
   // Parse URL params for shortcuts
   useEffect(() => {
@@ -1664,7 +1825,7 @@ export default function App() {
 
     // Update URL for shortcuts
     const url = new URL(window.location);
-    if (task !== "history") {
+    if (task !== "history" && task !== "settings") {
       url.searchParams.set("task", task);
     } else {
       url.searchParams.delete("task");
@@ -1674,24 +1835,24 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-4">
-      <PWAInstallBanner />
+      <PWAInstallBanner lang={lang} />
 
       <div className="max-w-lg mx-auto">
         <header className="rounded-xl shadow-md p-4 bg-white mb-4 mx-4">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900 flex items-center justify-center gap-3">
               <span className="text-2xl">📊</span>
-              Статистика роботи 1.151V
+              {t(lang, "appTitle")} 1.16V
             </h1>
             <p className="text-sm text-gray-500 italic mt-2">
-              Збір даних по персоналу, транспорту та канцелярії
+              {t(lang, "appDesc")}
             </p>
           </div>
         </header>
 
         <div className="rounded-xl shadow-md p-4 bg-white mx-4 mb-4">
           <h2 className="text-xl font-semibold text-gray-700 mb-4">
-            Оберіть завдання:
+            {t(lang, "chooseTask")}
           </h2>
           <div className="grid grid-cols-5 gap-3">
             <button
@@ -1752,10 +1913,10 @@ export default function App() {
             </button>
             <button
               onClick={() => handleTaskChange("settings")}
-              className={`p-3 rounded-lg shadow ${
+              className={`p-3 rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
                 currentTask === "settings"
                   ? "bg-gray-800 text-white"
-                  : "bg-white border"
+                  : "bg-white text-gray-700 border hover:bg-gray-50 active:bg-gray-100"
               }`}
             >
               <div className="flex flex-col items-center gap-1">
@@ -1799,7 +1960,7 @@ export default function App() {
           )}
         </div>
 
-        <PWAStatus />
+        <PWAStatus lang={lang} />
 
         <div className="text-center mt-6 mx-4">
           <div className="flex items-center justify-center gap-2">
