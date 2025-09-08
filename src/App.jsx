@@ -1,5 +1,41 @@
 import React, { useState, useEffect, useCallback } from "react";
 
+// === Локалізація ===
+const LANGUAGES = {
+  ua: {
+    settings: "Налаштування",
+    language: "Мова",
+    copy: "Копіювати",
+    copied: "Скопійовано!",
+  },
+  en: {
+    settings: "Settings",
+    language: "Language",
+    copy: "Copy",
+    copied: "Copied!",
+  },
+  nl: {
+    settings: "Instellingen",
+    language: "Taal",
+    copy: "Kopiëren",
+    copied: "Gekopieerd!",
+  },
+};
+
+// === Функція копіювання ===
+const copyToClipboard = (text) => {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text);
+  } else {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand("copy");
+    document.body.removeChild(textarea);
+  }
+};
+
 // Constants
 const PERSONNEL_ZONES = [
   "Zone 220",
@@ -1083,32 +1119,74 @@ const HistoryDetailView = ({ date, onBack }) => {
     );
   };
 
-  const renderTask2Data = () => {
-    const hasData = Object.values(task2Data.bikes || {}).some(
-      (count) => count > 0
-    );
+  // const renderTask2Data = () => {
+  //   const hasData = Object.values(task2Data.bikes || {}).some(
+  //     (count) => count > 0
+  //   );
 
-    if (!hasData) {
+  //   if (!hasData) {
+  //     return <div className="text-gray-500 italic">Немає збережених даних</div>;
+  //   }
+
+  //   return (
+  //     <div className="space-y-2">
+  //       <h4 className="font-semibold text-orange-700 mb-2">
+  //         Велосипеди та транспорт:
+  //       </h4>
+  //       {Object.entries(task2Data.bikes).map(
+  //         ([type, count]) =>
+  //           count > 0 && (
+  //             <div
+  //               key={type}
+  //               className="flex justify-between items-center p-2 bg-orange-50 rounded-lg"
+  //             >
+  //               <span>{type}</span>
+  //               <span className="font-bold text-orange-600">{count}</span>
+  //             </div>
+  //           )
+  //       )}
+  //     </div>
+  //   );
+  // };
+  const renderTask2Data = () => {
+    const entries = Object.entries(task2Data.bikes || {}).filter(
+      ([_, c]) => c > 0
+    );
+    if (entries.length === 0)
       return <div className="text-gray-500 italic">Немає збережених даних</div>;
-    }
 
     return (
       <div className="space-y-2">
         <h4 className="font-semibold text-orange-700 mb-2">
           Велосипеди та транспорт:
         </h4>
-        {Object.entries(task2Data.bikes).map(
-          ([type, count]) =>
-            count > 0 && (
-              <div
-                key={type}
-                className="flex justify-between items-center p-2 bg-orange-50 rounded-lg"
-              >
-                <span>{type}</span>
-                <span className="font-bold text-orange-600">{count}</span>
-              </div>
-            )
-        )}
+        {entries.map(([type, count]) => (
+          <div
+            key={type}
+            className="flex justify-between items-center p-2 bg-orange-50 rounded-lg"
+          >
+            <span>{type}</span>
+            <span className="font-bold text-orange-600">{count}</span>
+          </div>
+        ))}
+        <button
+          onClick={() => {
+            vibrateDevice("buttonPress");
+            const text = `${new Date(date).toLocaleDateString("uk-UA", {
+              day: "2-digit",
+              month: "2-digit",
+            })}\nВелосипеди:`;
+            const formatted = entries.reduce(
+              (acc, [label, val]) => acc + `\n${label}: ${val}`,
+              text
+            );
+            copyToClipboard(formatted);
+            alert(LANGUAGES[lang].copied); // можеш замінити на toast
+          }}
+          className="mt-2 w-full bg-indigo-500 hover:bg-indigo-600 text-white py-2 rounded-lg"
+        >
+          📋 {LANGUAGES[lang].copy}
+        </button>
       </div>
     );
   };
@@ -1463,11 +1541,31 @@ const PWAStatus = () => {
   );
 };
 
+// === Налаштування ===
+const SettingsView = ({ lang, setLang }) => (
+  <div className="space-y-4">
+    <h2 className="text-xl font-semibold">⚙️ {LANGUAGES[lang].settings}</h2>
+    <label className="block text-sm text-gray-600 mb-2">
+      {LANGUAGES[lang].language}:
+    </label>
+    <select
+      value={lang}
+      onChange={(e) => setLang(e.target.value)}
+      className="w-full p-2 border rounded-lg"
+    >
+      <option value="ua">Українська</option>
+      <option value="en">English</option>
+      <option value="nl">Nederlands</option>
+    </select>
+  </div>
+);
+
 // Main App Component with PWA Features
 export default function App() {
   const [currentTask, setCurrentTask] = useState("task3");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState(null);
+  const [lang, setLang] = useState("ua");
 
   // Parse URL params for shortcuts
   useEffect(() => {
@@ -1529,7 +1627,7 @@ export default function App() {
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900 flex items-center justify-center gap-3">
               <span className="text-2xl">📊</span>
-              Статистика роботи 1.12V
+              Статистика роботи 1.13V
             </h1>
             <p className="text-sm text-gray-500 italic mt-2">
               Збір даних по персоналу, транспорту та канцелярії
@@ -1541,7 +1639,7 @@ export default function App() {
           <h2 className="text-xl font-semibold text-gray-700 mb-4">
             Оберіть завдання:
           </h2>
-          <div className="grid grid-cols-4 gap-3">
+          <div className="grid grid-cols-5 gap-3">
             <button
               onClick={() => handleTaskChange("task1")}
               className={`p-3 rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
@@ -1594,6 +1692,21 @@ export default function App() {
                 <span className="text-xs font-medium">Історія</span>
               </div>
             </button>
+            <button
+              onClick={() => handleTaskChange("settings")}
+              className={`p-3 rounded-lg shadow ${
+                currentTask === "settings"
+                  ? "bg-gray-800 text-white"
+                  : "bg-white border"
+              }`}
+            >
+              <div className="flex flex-col items-center gap-1">
+                <span className="text-xl">⚙️</span>
+                <span className="text-xs font-medium">
+                  {LANGUAGES[lang].settings}
+                </span>
+              </div>
+            </button>
           </div>
         </div>
 
@@ -1619,7 +1732,10 @@ export default function App() {
               status={status}
             />
           )}
-          {currentTask === "history" && <HistoryView />}
+          {currentTask === "history" && <HistoryView lang={lang} />}
+          {currentTask === "settings" && (
+            <SettingsView lang={lang} setLang={setLang} />
+          )}
         </div>
 
         <PWAStatus />
