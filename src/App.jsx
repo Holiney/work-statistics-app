@@ -230,7 +230,7 @@ const translations = {
     recordsFound: "Records gevonden",
     historyEmpty: "Geschiedenis is leeg",
     saveDataPrompt: "Sla gegevens op in een van de taken om ze hier te zien",
-    detailedView: "Gedetailleerde weergave",
+    detailedView: "Gedetailleerde wegave",
     deleteConfirm: "Verwijder alle gegevens voor",
 
     // PWA
@@ -609,7 +609,7 @@ const Counter = ({ value, onChange, label, lang }) => {
           <span className="text-5xl font-bold text-blue-600 dark:text-blue-400">
             {value}
           </span>
-          <p className="text-sm text-gray-500 dark:text-gray-400 italic mt-2">
+          <p className="text-sm text-[hsl(var(--muted-foreground))] italic mt-2">
             {t(lang, "units")}
           </p>
         </div>
@@ -646,7 +646,7 @@ const NumberGrid = ({ value, onChange, label, onClose, lang }) => {
           <span className="text-5xl font-bold text-purple-600 dark:text-purple-400">
             {value}
           </span>
-          <p className="text-sm text-gray-500 dark:text-gray-400 italic mt-2">
+          <p className="text-sm text-[hsl(var(--muted-foreground))] italic mt-2">
             {t(lang, "units")}
           </p>
         </div>
@@ -1906,15 +1906,15 @@ export default function App() {
     loadFromStorage("app-vibration-enabled", true)
   );
 
-  const setTheme = (newTheme) => {
+  const setTheme = useCallback((newTheme) => {
     setThemeState(newTheme);
     saveToStorage("app-theme", newTheme);
-  };
+  }, []);
 
-  const setVibrationEnabled = (isEnabled) => {
+  const setVibrationEnabled = useCallback((isEnabled) => {
     setVibrationEnabledState(isEnabled);
     saveToStorage("app-vibration-enabled", isEnabled);
-  };
+  }, []);
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -1962,17 +1962,17 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-4">
+    <div className="min-h-screen bg-[hsl(var(--background))] text-[hsl(var(--foreground))] pb-4">
       <PWAInstallBanner lang={lang} />
 
       <div className="max-w-lg mx-auto">
-        <header className="rounded-xl shadow-md p-4 bg-white dark:bg-gray-800 mb-4 mx-4 flex items-center justify-between">
+        <header className="rounded-xl shadow-md p-4 bg-[hsl(var(--card))] mb-4 mx-4 flex items-center justify-between">
           <div className="text-center flex-grow">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center justify-center gap-3">
+            <h1 className="text-2xl font-bold text-[hsl(var(--card-foreground))]flex items-center justify-center gap-3">
               <span className="text-2xl">📊</span>
-              {t(lang, "appTitle")} 1.17V
+              {t(lang, "appTitle")}
             </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400 italic mt-2">
+            <p className="text-sm text-[hsl(var(--muted-foreground))] italic mt-2">
               {t(lang, "appDesc")}
             </p>
           </div>
@@ -1988,7 +1988,7 @@ export default function App() {
           </button>
         </header>
 
-        <div className="rounded-xl shadow-md p-4 bg-white dark:bg-gray-800 mx-4 mb-4">
+        <div className="rounded-xl shadow-md p-4 bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] mx-4 mb-4">
           <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-4">
             {t(lang, "chooseTask")}
           </h2>
@@ -2052,7 +2052,7 @@ export default function App() {
           </div>
         </div>
 
-        <div className="rounded-xl shadow-md p-4 bg-white dark:bg-gray-800 mx-4 mb-4">
+        <div className="rounded-xl shadow-md p-4 bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] mx-4 mb-4">
           {currentTask === "task1" && <Task1PersonnelCars lang={lang} />}
           {currentTask === "task2" && <Task2BikeParking lang={lang} />}
           {currentTask === "task3" && <Task3PrintRooms lang={lang} />}
@@ -2074,7 +2074,7 @@ export default function App() {
         <div className="text-center mt-6 mx-4">
           <div className="flex items-center justify-center gap-2">
             <span className="text-xs text-gray-400 dark:text-gray-500">
-              Work Statistics PWA v4.1.0 🚀
+              Work Statistics PWA v1.8 🚀
             </span>
           </div>
         </div>
