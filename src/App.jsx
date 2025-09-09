@@ -2074,7 +2074,7 @@ export default function App() {
         <div className="text-center mt-6 mx-4">
           <div className="flex items-center justify-center gap-2">
             <span className="text-xs text-gray-400 dark:text-gray-500">
-              Work Statistics PWA v1.8 🚀
+              Work Statistics PWA v1.81 🚀
             </span>
           </div>
         </div>
