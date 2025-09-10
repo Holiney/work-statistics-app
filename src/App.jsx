@@ -1895,7 +1895,7 @@ const SettingsView = ({
         >
           {t(lang, "vibrationOff")}
         </button>
-        <button onClick={() => navigator.vibrate(200)}>Натисни мене</button>
+        <button onclick="navigator.vibrate(200)">Тест вібрації</button>
       </div>
     </div>
   </div>
