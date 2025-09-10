@@ -342,6 +342,14 @@ const vibrateDevice = (pattern) => {
     }
   }
 };
+const testVibration = () => {
+  if ("vibrate" in navigator) {
+    alert("Запускаю тест вібрації на 500ms");
+    navigator.vibrate(500); // довга вібрація
+  } else {
+    alert("Ваш браузер не підтримує вібрацію");
+  }
+};
 
 // Storage helpers
 const loadFromStorage = (key, defaultValue) => {
@@ -1894,6 +1902,12 @@ const SettingsView = ({
           }`}
         >
           {t(lang, "vibrationOff")}
+        </button>
+        <button
+          onClick={testVibration}
+          className="w-full mt-2 p-2 bg-blue-500 text-white rounded-lg shadow"
+        >
+          🔔 Тест вібрації
         </button>
       </div>
     </div>
