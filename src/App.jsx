@@ -717,19 +717,17 @@ const Task1PersonnelCars = ({ lang }) => {
   };
 
   const handleSave = () => {
-    const hasData =
-      Object.values(personnelData).some((count) => count > 0) || carsCount > 0;
+    const hasData = Object.values(bikeData).some((count) => count > 0);
     if (!hasData) {
       showToast(t(lang, "noDataToSave"), "error");
       return;
     }
 
     const todayKey = getTodayKey();
-    saveToStorage(`task1-personnel-data-${todayKey}`, personnelData);
-    saveToStorage(`task1-cars-data-${todayKey}`, carsCount);
+    saveToStorage(`task2-bikes-data-${todayKey}`, bikeData);
 
     setIsSaved(true);
-    vibrateDevice("save");
+    vibrateDevice("save"); // <-- Додано цей рядок
     showToast(t(lang, "dataSaved"));
   };
 
