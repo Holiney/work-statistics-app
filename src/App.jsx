@@ -1895,7 +1895,17 @@ const SettingsView = ({
         >
           {t(lang, "vibrationOff")}
         </button>
-        <button onclick="navigator.vibrate(200)">Тест вібрації</button>
+        <button
+          onClick={() => {
+            vibrateDevice("buttonPress");
+            if ("vibrate" in navigator) {
+              navigator.vibrate(200);
+            }
+          }}
+          className="p-2 bg-gray-200 dark:bg-gray-700 rounded-lg"
+        >
+          Тесті вібрації
+        </button>
       </div>
     </div>
   </div>
