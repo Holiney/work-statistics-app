@@ -1328,6 +1328,28 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
         </div>
       );
     }
+    const entries = [];
+    Object.entries(task1Data.personnel || {}).forEach(([zone, count]) => {
+      if (count > 0) {
+        entries.push(`${zone}: ${count}`);
+      }
+    });
+    if (task1Data.cars > 0) {
+      entries.push(`${t(lang, "totalCars")}: ${task1Data.cars}`);
+    }
+
+    const handleCopy = () => {
+      vibrateDevice("buttonPress");
+      const dateStr = new Date(date).toLocaleDateString("uk-UA", {
+        day: "2-digit",
+        month: "2-digit",
+      });
+      const textToCopy = `${dateStr}\n${t(lang, "personnel")}:\n${entries.join(
+        "\n"
+      )}`;
+      copyToClipboard(textToCopy);
+      showToast(t(lang, "copied"));
+    };
 
     return (
       <div className="space-y-4">
@@ -1370,6 +1392,13 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
             </div>
           </div>
         )}
+
+        <button
+          onClick={handleCopy}
+          className="mt-2 w-full bg-indigo-500 hover:bg-indigo-600 text-white py-2 rounded-lg"
+        >
+          📋 {t(lang, "copy")}
+        </button>
       </div>
     );
   };
@@ -1441,6 +1470,32 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
         </div>
       );
     }
+    const entries = [];
+    Object.entries(task3Data).forEach(([room, roomData]) => {
+      const roomEntries = [];
+      Object.entries(roomData || {}).forEach(([item, count]) => {
+        if (count > 0) {
+          roomEntries.push(`${item}: ${count}`);
+        }
+      });
+      if (roomEntries.length > 0) {
+        entries.push(`${t(lang, "room")} ${room}:`);
+        entries.push(...roomEntries);
+      }
+    });
+
+    const handleCopy = () => {
+      vibrateDevice("buttonPress");
+      const dateStr = new Date(date).toLocaleDateString("uk-UA", {
+        day: "2-digit",
+        month: "2-digit",
+      });
+      const textToCopy = `${dateStr}\n${t(lang, "office")}:\n${entries.join(
+        "\n"
+      )}`;
+      copyToClipboard(textToCopy);
+      showToast(t(lang, "copied"));
+    };
 
     return (
       <div className="space-y-4">
@@ -1477,6 +1532,12 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
             </div>
           );
         })}
+        <button
+          onClick={handleCopy}
+          className="mt-2 w-full bg-indigo-500 hover:bg-indigo-600 text-white py-2 rounded-lg"
+        >
+          📋 {t(lang, "copy")}
+        </button>
       </div>
     );
   };
@@ -1662,16 +1723,6 @@ const HistoryView = ({ lang }) => {
             {t(lang, "recordsFound")}: {savedDates.length}
           </p>
         </div>
-
-        {savedDates.length > 0 && (
-          <button
-            onClick={exportData}
-            className="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 text-white rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform font-medium flex items-center gap-2"
-          >
-            <span className="text-lg">📄</span>
-            {t(lang, "export")}
-          </button>
-        )}
       </div>
 
       {savedDates.length === 0 ? (
@@ -1902,9 +1953,9 @@ const SettingsView = ({
               navigator.vibrate(200);
             }
           }}
-          className="p-2 bg-gray-200 dark:bg-gray-700 rounded-lg"
+          className="w-full p-2 bg-gray-200 dark:bg-gray-700 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition"
         >
-          Тесті вібрації
+          Тест вібрації
         </button>
       </div>
     </div>
