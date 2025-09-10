@@ -584,18 +584,73 @@ const BottomSheet = ({ isOpen, onClose, title, children }) => {
 };
 
 // Counter Component
+// const Counter = ({ value, onChange, label, lang }) => {
+//   const handleIncrease = () => {
+//     if (value < 999) {
+//       vibrateDevice("counterIncrease");
+//       onChange(value + 1);
+//     }
+//   };
+
+//   const handleDecrease = () => {
+//     if (value > 0) {
+//       vibrateDevice("counterDecrease");
+//       onChange(value - 1);
+//     }
+//   };
+
+//   return (
+//     <div className="flex flex-col">
+//       <div className="text-center mb-6">
+//         <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-4">
+//           {label}
+//         </h2>
+//         <div className="rounded-xl shadow-md p-4 bg-white dark:bg-gray-700 border dark:border-gray-600">
+//           <span className="text-5xl font-bold text-blue-600 dark:text-blue-400">
+//             {value}
+//           </span>
+//           <p className="text-sm text-[hsl(var(--muted-foreground))] italic mt-2">
+//             {t(lang, "units")}
+//           </p>
+//         </div>
+//       </div>
+//       <div className="space-y-4">
+//         <button
+//           onClick={handleIncrease}
+//           className="w-full h-20 bg-green-500 hover:bg-green-600 active:bg-green-700 text-white rounded-xl shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold text-lg flex items-center justify-center gap-2"
+//         >
+//           <span className="text-2xl">➕</span>
+//           {t(lang, "add")}
+//         </button>
+//         <button
+//           onClick={handleDecrease}
+//           className="w-full h-16 bg-red-500 hover:bg-red-600 active:bg-red-700 text-white rounded-xl shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold flex items-center justify-center gap-2"
+//         >
+//           <span className="text-xl">➖</span>
+//           {t(lang, "subtract")}
+//         </button>
+//       </div>
+//     </div>
+//   );
+// };
 const Counter = ({ value, onChange, label, lang }) => {
+  const [isThrottled, setIsThrottled] = useState(false);
+
   const handleIncrease = () => {
-    if (value < 999) {
+    if (!isThrottled && value < 999) {
       vibrateDevice("counterIncrease");
       onChange(value + 1);
+      setIsThrottled(true);
+      setTimeout(() => setIsThrottled(false), 200); // затримка 200 мс
     }
   };
 
   const handleDecrease = () => {
-    if (value > 0) {
+    if (!isThrottled && value > 0) {
       vibrateDevice("counterDecrease");
       onChange(value - 1);
+      setIsThrottled(true);
+      setTimeout(() => setIsThrottled(false), 200); // затримка 200 мс
     }
   };
 
@@ -617,14 +672,16 @@ const Counter = ({ value, onChange, label, lang }) => {
       <div className="space-y-4">
         <button
           onClick={handleIncrease}
-          className="w-full h-20 bg-green-500 hover:bg-green-600 active:bg-green-700 text-white rounded-xl shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold text-lg flex items-center justify-center gap-2"
+          disabled={isThrottled}
+          className="w-full h-20 bg-green-500 hover:bg-green-600 active:bg-green-700 text-white rounded-xl shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold text-lg flex items-center justify-center gap-2 disabled:opacity-50"
         >
           <span className="text-2xl">➕</span>
           {t(lang, "add")}
         </button>
         <button
           onClick={handleDecrease}
-          className="w-full h-16 bg-red-500 hover:bg-red-600 active:bg-red-700 text-white rounded-xl shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold flex items-center justify-center gap-2"
+          disabled={isThrottled}
+          className="w-full h-16 bg-red-500 hover:bg-red-600 active:bg-red-700 text-white rounded-xl shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
         >
           <span className="text-xl">➖</span>
           {t(lang, "subtract")}
@@ -2072,7 +2129,7 @@ export default function App() {
         <div className="text-center mt-6 mx-4">
           <div className="flex items-center justify-center gap-2">
             <span className="text-xs text-gray-400 dark:text-gray-500">
-              Work Statistics PWA v1.81 🚀
+              Work Statistics PWA v1.4 🚀
             </span>
           </div>
         </div>
