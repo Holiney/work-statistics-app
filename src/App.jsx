@@ -642,7 +642,7 @@ const Counter = ({ value, onChange, label, lang }) => {
   );
 };
 // Number Grid Component
-const NumberGrid = ({ value, onChange, label, onClose, lang }) => {
+const NumberGrid = ({ value, onChange, label, onClose, lang, options }) => {
   return (
     <div className="flex flex-col">
       <div className="text-center mb-6">
@@ -651,7 +651,7 @@ const NumberGrid = ({ value, onChange, label, onClose, lang }) => {
         </h2>
         <div className="rounded-xl shadow-md p-4 bg-white dark:bg-gray-700 border dark:border-gray-600">
           <span className="text-5xl font-bold text-purple-600 dark:text-purple-400">
-            {value}
+            {value === 0 && options && options.includes("–") ? "–" : value}
           </span>
           <p className="text-sm text-[hsl(var(--muted-foreground))] italic mt-2">
             {t(lang, "units")}
@@ -659,21 +659,21 @@ const NumberGrid = ({ value, onChange, label, onClose, lang }) => {
         </div>
       </div>
       <div className="grid grid-cols-5 gap-3">
-        {Array.from({ length: 21 }, (_, i) => (
+        {options.map((option) => (
           <button
-            key={i}
+            key={option}
             onClick={() => {
               vibrateDevice("buttonPress");
-              onChange(i);
+              onChange(option === "–" ? 0 : option);
               onClose();
             }}
             className={`h-12 text-sm font-bold rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
-              value === i
+              value === option || (value === 0 && option === "–")
                 ? "bg-purple-600 text-white"
                 : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border dark:border-gray-600 hover:bg-purple-50 dark:hover:bg-purple-900 active:bg-purple-100 dark:active:bg-purple-800"
             }`}
           >
-            {i}
+            {option}
           </button>
         ))}
       </div>
@@ -724,17 +724,22 @@ const Task1PersonnelCars = ({ lang }) => {
   };
 
   const handleSave = () => {
-    const hasData = Object.values(bikeData).some((count) => count > 0);
-    if (!hasData) {
+    const hasPersonnelData = Object.values(personnelData).some(
+      (count) => count > 0
+    );
+    const hasCarsData = carsCount > 0;
+
+    if (!hasPersonnelData && !hasCarsData) {
       showToast(t(lang, "noDataToSave"), "error");
       return;
     }
 
     const todayKey = getTodayKey();
-    saveToStorage(`task2-bikes-data-${todayKey}`, bikeData);
+    saveToStorage(`task1-personnel-data-${todayKey}`, personnelData);
+    saveToStorage(`task1-cars-data-${todayKey}`, carsCount);
 
     setIsSaved(true);
-    vibrateDevice("save"); // <-- Додано цей рядок
+    vibrateDevice("save");
     showToast(t(lang, "dataSaved"));
   };
 
@@ -1124,6 +1129,46 @@ const Task3PrintRooms = ({ lang }) => {
     );
   };
 
+  const getOptionsForItem = (item) => {
+    switch (item) {
+      case "EK 1":
+      case "EK 2":
+        return Array.from({ length: 6 }, (_, i) => i); // 0-5
+      case "EK 3":
+      case "EK 4":
+      case "EK 10A":
+        return Array.from({ length: 11 }, (_, i) => i); // 0-10
+      case "EK 5":
+      case "EK 6":
+        return Array.from({ length: 11 }, (_, i) => i * 10); // 0, 10, 20...100
+      case "EK 7A":
+      case "EK 7B":
+      case "EK 7C":
+      case "EK 10B":
+        return Array.from({ length: 21 }, (_, i) => i); // 0-20
+      case "EK 8A":
+      case "EK 8B":
+      case "EK 8C":
+      case "EK 9A":
+      case "EK 9B":
+      case "EK 9C":
+        return Array.from({ length: 6 }, (_, i) => i); // 0-5
+      case "EK 11A":
+      case "EK 11B":
+      case "EK 12":
+      case "EK 13":
+      case "EK 14":
+      case "EK 15":
+      case "EK 16":
+      case "EK 17":
+      case "EK 18":
+      case "EK 19":
+        return ["–", 1]; // 1, - (represented as 0 and –)
+      default:
+        return Array.from({ length: 21 }, (_, i) => i); // Default 0-20
+    }
+  };
+
   const updateItem = (item, count) => {
     if (!isSaved) {
       setPrintData((prev) => ({ ...prev, [item]: count }));
@@ -1237,7 +1282,8 @@ const Task3PrintRooms = ({ lang }) => {
                       : "bg-purple-600 text-white"
                   }`}
                 >
-                  {printData[item] || 0}
+                  {printData[item] ||
+                    (getOptionsForItem(item).includes("–") ? "–" : 0)}
                 </span>
                 <span className="text-gray-400 dark:text-gray-500">▶</span>
               </div>
@@ -1294,6 +1340,7 @@ const Task3PrintRooms = ({ lang }) => {
             label={`${t(lang, "quantity")}: ${selectedItem}`}
             onClose={() => setSelectedItem(null)}
             lang={lang}
+            options={getOptionsForItem(selectedItem)}
           />
         )}
       </BottomSheet>
@@ -1310,8 +1357,8 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
   const task2Data = getDataForDate(date, "task2");
   const task3Data = getDataForDate(date, "task3");
 
-  const showToast = (message) => {
-    setToast({ show: true, message });
+  const showToast = (message, type = "success") => {
+    setToast({ show: true, message, type });
     setTimeout(() => setToast({ show: false, message: "" }), 2000);
   };
 
@@ -1328,6 +1375,7 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
         </div>
       );
     }
+
     const entries = [];
     Object.entries(task1Data.personnel || {}).forEach(([zone, count]) => {
       if (count > 0) {
@@ -1348,11 +1396,17 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
         "\n"
       )}`;
       copyToClipboard(textToCopy);
-      showToast(t(lang, "copied"));
+      showToast(t(lang, "copied"), "copy");
     };
 
     return (
       <div className="space-y-4">
+        <Toast
+          message={toast.message}
+          isVisible={toast.show}
+          onClose={() => setToast({ show: false, message: "" })}
+          type="copy"
+        />
         {hasPersonnelData && (
           <div>
             <h4 className="font-semibold text-blue-700 dark:text-blue-400 mb-2">
@@ -1392,7 +1446,6 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
             </div>
           </div>
         )}
-
         <button
           onClick={handleCopy}
           className="mt-2 w-full bg-indigo-500 hover:bg-indigo-600 text-white py-2 rounded-lg"
@@ -1448,7 +1501,7 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
               text
             );
             copyToClipboard(formatted);
-            showToast(t(lang, "copied"));
+            showToast(t(lang, "copied"), "copy");
           }}
           className="mt-2 w-full bg-indigo-500 hover:bg-indigo-600 text-white py-2 rounded-lg"
         >
@@ -1474,8 +1527,11 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
     Object.entries(task3Data).forEach(([room, roomData]) => {
       const roomEntries = [];
       Object.entries(roomData || {}).forEach(([item, count]) => {
-        if (count > 0) {
-          roomEntries.push(`${item}: ${count}`);
+        if (
+          count > 0 ||
+          (getOptionsForItem(item).includes("–") && count === 0)
+        ) {
+          roomEntries.push(`${item}: ${count === 0 ? "–" : count}`);
         }
       });
       if (roomEntries.length > 0) {
@@ -1494,11 +1550,17 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
         "\n"
       )}`;
       copyToClipboard(textToCopy);
-      showToast(t(lang, "copied"));
+      showToast(t(lang, "copied"), "copy");
     };
 
     return (
       <div className="space-y-4">
+        <Toast
+          message={toast.message}
+          isVisible={toast.show}
+          onClose={() => setToast({ show: false, message: "" })}
+          type="copy"
+        />
         <h4 className="font-semibold text-purple-700 dark:text-purple-400 mb-2">
           {t(lang, "officeSupplies")}:
         </h4>
@@ -1516,14 +1578,16 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
               <div className="space-y-1 ml-4">
                 {Object.entries(roomData).map(
                   ([item, count]) =>
-                    count > 0 && (
+                    (count > 0 ||
+                      (getOptionsForItem(item).includes("–") &&
+                        count === 0)) && (
                       <div
                         key={item}
                         className="flex justify-between items-center p-2 bg-purple-50 dark:bg-purple-900 rounded-lg"
                       >
                         <span className="dark:text-purple-200">{item}</span>
                         <span className="font-bold text-purple-600 dark:text-purple-300">
-                          {count}
+                          {count === 0 ? "–" : count}
                         </span>
                       </div>
                     )
@@ -1667,31 +1731,6 @@ const HistoryView = ({ lang }) => {
       setSavedDates(updatedDates);
       showToast(t(lang, "dataDeleted"));
     }
-  };
-
-  const exportData = () => {
-    vibrateDevice("medium");
-    const allData = {};
-    savedDates.forEach((date) => {
-      allData[date] = {
-        task1: getDataForDate(date, "task1"),
-        task2: getDataForDate(date, "task2"),
-        task3: getDataForDate(date, "task3"),
-      };
-    });
-
-    const dataStr = JSON.stringify(allData, null, 2);
-    const dataBlob = new Blob([dataStr], { type: "application/json" });
-    const url = URL.createObjectURL(dataBlob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `work-statistics-${new Date()
-      .toISOString()
-      .slice(0, 10)}.json`;
-    link.click();
-    URL.revokeObjectURL(url);
-    vibrateDevice("success");
-    showToast(t(lang, "dataExported"));
   };
 
   if (selectedDate) {
@@ -2141,7 +2180,7 @@ export default function App() {
         <div className="text-center mt-6 mx-4">
           <div className="flex items-center justify-center gap-2">
             <span className="text-xs text-gray-400 dark:text-gray-500">
-              Work Statistics PWA v1.41 🚀
+              Work Statistics PWA v1.46 🚀
             </span>
           </div>
         </div>
