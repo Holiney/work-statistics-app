@@ -2033,6 +2033,9 @@ export default function App() {
     loadFromStorage("app-vibration-enabled", true)
   );
 
+  const taskList = ["task1", "task2", "task3"];
+  let touchStartX = 0;
+
   const setTheme = useCallback((newTheme) => {
     setThemeState(newTheme);
     saveToStorage("app-theme", newTheme);
@@ -2052,6 +2055,33 @@ export default function App() {
     }
   }, [theme]);
 
+  // Swipe logic
+  const handleTouchStart = (e) => {
+    touchStartX = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e) => {
+    if (taskList.includes(currentTask)) {
+      const touchEndX = e.changedTouches[0].clientX;
+      const swipeDistance = touchEndX - touchStartX;
+      const swipeThreshold = 50;
+
+      if (swipeDistance > swipeThreshold) {
+        // Swipe Right (Previous Task)
+        const currentIndex = taskList.indexOf(currentTask);
+        if (currentIndex > 0) {
+          handleTaskChange(taskList[currentIndex - 1]);
+        }
+      } else if (swipeDistance < -swipeThreshold) {
+        // Swipe Left (Next Task)
+        const currentIndex = taskList.indexOf(currentTask);
+        if (currentIndex < taskList.length - 1) {
+          handleTaskChange(taskList[currentIndex + 1]);
+        }
+      }
+    }
+  };
+
   // Parse URL params for shortcuts
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -2064,19 +2094,39 @@ export default function App() {
   // Request wake lock when app starts
   useEffect(() => {
     if ("wakeLock" in navigator) {
+      let wakeLock = null;
       const requestWakeLock = async () => {
         try {
-          const wakeLock = await navigator.wakeLock.request("screen");
-          console.log("Wake lock is active.");
-          return () => wakeLock.release();
+          wakeLock = await navigator.wakeLock.request("screen");
+          console.log("Wake Lock is active.");
         } catch (err) {
           console.error(`${err.name}, ${err.message}`);
-          return () => {};
         }
       };
 
-      const releaseLock = requestWakeLock();
-      return () => releaseLock.then((release) => release());
+      const handleVisibilityChange = () => {
+        if (document.visibilityState === "visible") {
+          requestWakeLock();
+        } else {
+          if (wakeLock !== null) {
+            wakeLock.release();
+            wakeLock = null;
+          }
+        }
+      };
+
+      document.addEventListener("visibilitychange", handleVisibilityChange);
+      requestWakeLock();
+
+      return () => {
+        document.removeEventListener(
+          "visibilitychange",
+          handleVisibilityChange
+        );
+        if (wakeLock !== null) {
+          wakeLock.release();
+        }
+      };
     }
   }, []);
 
@@ -2120,7 +2170,11 @@ export default function App() {
         </button>
       </header>
 
-      <div className="max-w-lg mx-auto pt-24">
+      <div
+        className="max-w-lg mx-auto pt-24"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         <div className="rounded-xl shadow-md p-4 bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] mx-4 mb-4">
           <h2 className="text-xl font-semibold text-[hsl(var(--foreground))] mb-4">
             {t(lang, "chooseTask")}
@@ -2205,7 +2259,7 @@ export default function App() {
         <div className="text-center mt-6 mx-4">
           <div className="flex items-center justify-center gap-2">
             <span className="text-xs text-gray-400 dark:text-gray-500">
-              Work Statistics PWA v1.52 🚀
+              Work Statistics PWA v1.43 🚀
             </span>
           </div>
         </div>
