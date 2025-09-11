@@ -1,27 +1,76 @@
 @import "tailwindcss";
 
+
 @layer base {
   :root {
-    --background: 240 5.9% 90%;       /* gray-100 */
-    --foreground: 240 10% 3.9%;        /* gray-900 */
+    /* Light Theme Palette */
+    --background: 220 14% 96.1%; /* A very light gray, almost off-white */
+    --foreground: 220 14% 20%; /* A dark charcoal gray for text */
     
-    --card: 0 0% 100%;                 /* white */
-    --card-foreground: 240 10% 3.9%;   /* gray-900 */
+    --card: 0 0% 100%; /* Pure white for cards/components */
+    --card-foreground: 220 14% 20%;
     
-    --muted-foreground: 240 3.8% 46.1%; /* gray-500 */
+    --muted: 220 14% 90%; /* A light gray for secondary backgrounds */
+    --muted-foreground: 220 14% 50%; /* A medium gray for muted text */
     
-    --border: 240 5.9% 83.1%;          /* gray-200 */
+    --border: 220 14% 85%; /* A subtle light gray for borders */
+    
+    --primary: 210 100% 50%; /* A vibrant blue for primary actions */
+    --primary-foreground: 0 0% 100%; /* White text on primary */
+    
+    --secondary: 220 14% 92%; /* A light gray for secondary buttons */
+    --secondary-foreground: 220 14% 30%;
+    
+    --accent: 210 100% 90%; /* A very light blue for accents */
+    --accent-foreground: 210 100% 30%;
+    
+    --destructive: 0 84.2% 60.2%; /* A red for destructive actions */
+    --destructive-foreground: 0 0% 100%;
+    
+    /* Specific Task Colors (for consistency) */
+    --task1-accent: 217.2 91.2% 59.8%; /* Blue */
+    --task2-accent: 30.5 73.5% 53.3%; /* Orange */
+    --task3-accent: 284.1 63.3% 40.8%; /* Purple */
+    --history-accent: 240 5.9% 90%; /* Indigo */
+      --select-item-hover-background: 220 14% 92%; /* A light gray for hover */
+  --select-item-hover-foreground: 220 14% 20%; /* Dark text for hover */
+  --select-item-selected-background: 220 14% 85%; /* Slightly darker for selected */
+  --select-item-selected-foreground: 220 14% 20%; /* Dark text for selected */
   }
 
   .dark {
-    --background: 240 10% 3.9%;        /* gray-900 */
-    --foreground: 240 5.9% 90%;        /* gray-100 */
+    /* Dark Theme Palette */
+    --background: 220 14% 10%; /* A very dark charcoal */
+    --foreground: 220 14% 85%; /* A light gray for text */
 
-    --card: 240 5.9% 10%;              /* gray-800 */
-    --card-foreground: 240 5.9% 90%;   /* gray-100 */
+    --card: 220 14% 15%; /* A slightly lighter charcoal for cards */
+    --card-foreground: 220 14% 85%;
 
-    --muted-foreground: 240 5% 64.9%;    /* gray-400 */
+    --muted: 220 14% 20%;
+    --muted-foreground: 220 14% 60%;
 
-    --border: 240 3.7% 25.9%;          /* gray-700 */
+    --border: 220 14% 25%;
+
+    --primary: 210 100% 60%; /* A slightly brighter blue for better visibility */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 14% 20%;
+    --secondary-foreground: 220 14% 75%;
+
+    --accent: 210 100% 20%;
+    --accent-foreground: 210 100% 70%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+    
+    /* Specific Task Colors */
+    --task1-accent: 217.2 91.2% 59.8%;
+    --task2-accent: 30.5 73.5% 53.3%;
+    --task3-accent: 284.1 63.3% 40.8%;
+    --history-accent: 240 5.9% 90%;
+    --select-item-hover-background: 220 14% 20%; /* Darker charcoal for hover */
+  --select-item-hover-foreground: 220 14% 95%; /* Light text for hover */
+  --select-item-selected-background: 220 14% 25%; /* Darker for selected */
+  --select-item-selected-foreground: 220 14% 95%; /* Light text for selected */
   }
 }

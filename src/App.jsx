@@ -385,7 +385,14 @@ const getAllSavedDates = () => {
   const dates = new Set();
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
-    if (key && key.includes("-data-")) {
+    // Оновлена логіка для фільтрації ключів історії
+    if (
+      key &&
+      (key.includes("task1-personnel-data-") ||
+        key.includes("task1-cars-data-") ||
+        key.includes("task2-bikes-data-") ||
+        key.includes("task3-data-"))
+    ) {
       const match = key.match(/-data-(\d{4}-\d{2}-\d{2})/);
       if (match) {
         dates.add(match[1]);
@@ -563,7 +570,7 @@ const BottomSheet = ({ isOpen, onClose, title, children }) => {
           onClose();
         }}
       />
-      <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 rounded-t-3xl shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div className="fixed bottom-0 left-0 right-0 bg-[hsl(var(--card))] dark:bg-gray-800 rounded-t-3xl shadow-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex justify-center py-3">
           <div className="w-12 h-1.5 bg-gray-300 dark:bg-gray-600 rounded-full" />
         </div>
@@ -610,12 +617,12 @@ const Counter = ({ value, onChange, label, lang, onClose }) => {
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col h-full justify-between">
       <div className="text-center mb-6">
-        <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-4">
+        <h2 className="text-xl font-semibold text-[hsl(var(--foreground))] mb-4">
           {label}
         </h2>
-        <div className="rounded-xl shadow-md p-4 bg-white dark:bg-gray-700 border dark:border-gray-600">
+        <div className="rounded-xl shadow-md p-4 bg-[hsl(var(--card))] border border-[hsl(var(--border))]">
           <span className="text-5xl font-bold text-blue-600 dark:text-blue-400">
             {value}
           </span>
@@ -656,10 +663,10 @@ const NumberGrid = ({ value, onChange, label, onClose, lang, options }) => {
   return (
     <div className="flex flex-col">
       <div className="text-center mb-6">
-        <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-4">
+        <h2 className="text-xl font-semibold text-[hsl(var(--foreground))] mb-4">
           {label}
         </h2>
-        <div className="rounded-xl shadow-md p-4 bg-white dark:bg-gray-700 border dark:border-gray-600">
+        <div className="rounded-xl shadow-md p-4 bg-[hsl(var(--card))] border border-[hsl(var(--border))]">
           <span className="text-5xl font-bold text-purple-600 dark:text-purple-400">
             {value === 0 && options && options.includes("–") ? "–" : value}
           </span>
@@ -678,8 +685,8 @@ const NumberGrid = ({ value, onChange, label, onClose, lang, options }) => {
             }}
             className={`h-12 text-sm font-bold rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
               value === option || (value === 0 && option === "–")
-                ? "bg-purple-600 text-white"
-                : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border dark:border-gray-600 hover:bg-purple-50 dark:hover:bg-purple-900 active:bg-purple-100 dark:active:bg-purple-800"
+                ? "bg-[hsl(var(--purple))] text-white"
+                : "bg-[hsl(var(--card))] text-[hsl(var(--foreground))] border border-[hsl(var(--border))] hover:bg-purple-50 dark:hover:bg-purple-900 active:bg-purple-100 dark:active:bg-purple-800"
             }`}
           >
             {option}
@@ -688,7 +695,7 @@ const NumberGrid = ({ value, onChange, label, onClose, lang, options }) => {
       </div>
       <button
         onClick={onClose}
-        className="w-full mt-6 h-16 bg-gray-200 hover:bg-gray-300 active:bg-gray-400 dark:bg-gray-700 dark:hover:bg-gray-600 dark:active:bg-gray-500 text-gray-800 dark:text-gray-100 rounded-xl shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold"
+        className="w-full mt-6 h-16 bg-[hsl(var(--secondary))] hover:bg-gray-300 active:bg-gray-400 text-[hsl(var(--secondary-foreground))] rounded-xl shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold"
       >
         {t(lang, "ok")}
       </button>
@@ -802,8 +809,8 @@ const Task1PersonnelCars = ({ lang }) => {
         type={toast.type}
       />
 
-      <div className="rounded-xl shadow-md p-4 bg-white dark:bg-gray-800 space-y-4">
-        <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-2">
+      <div className="rounded-xl shadow-md p-4 bg-[hsl(var(--card))] space-y-4">
+        <h2 className="text-xl font-semibold text-[hsl(var(--foreground))] flex items-center gap-2">
           <span className="text-xl">👥</span>
           {t(lang, "personnelByZones")}
         </h2>
@@ -839,8 +846,8 @@ const Task1PersonnelCars = ({ lang }) => {
         </div>
       </div>
 
-      <div className="rounded-xl shadow-md p-4 bg-white dark:bg-gray-800 space-y-4">
-        <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-2">
+      <div className="rounded-xl shadow-md p-4 bg-[hsl(var(--card))] space-y-4">
+        <h2 className="text-xl font-semibold text-[hsl(var(--foreground))] flex items-center gap-2">
           <span className="text-xl">🚗</span>
           {t(lang, "cars")}
         </h2>
@@ -1023,8 +1030,8 @@ const Task2BikeParking = ({ lang }) => {
         type={toast.type}
       />
 
-      <div className="rounded-xl shadow-md p-4 bg-white dark:bg-gray-800 space-y-4">
-        <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-2">
+      <div className="rounded-xl shadow-md p-4 bg-[hsl(var(--card))] space-y-4">
+        <h2 className="text-xl font-semibold text-[hsl(var(--foreground))] flex items-center gap-2">
           <span className="text-xl">🚴</span>
           {t(lang, "bikesAndTransport")}
         </h2>
@@ -1258,8 +1265,8 @@ const Task3PrintRooms = ({ lang }) => {
         type={toast.type}
       />
 
-      <div className="rounded-xl shadow-md p-4 bg-white dark:bg-gray-800 space-y-4">
-        <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-2">
+      <div className="rounded-xl shadow-md p-4 bg-[hsl(var(--card))] space-y-4">
+        <h2 className="text-xl font-semibold text-[hsl(var(--foreground))] flex items-center gap-2">
           <span className="text-xl">🖨️</span>
           {t(lang, "officeSupplies")}
         </h2>
@@ -1275,7 +1282,7 @@ const Task3PrintRooms = ({ lang }) => {
               className={`py-2 px-3 text-sm font-bold rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
                 selectedRoom === room
                   ? "bg-purple-600 text-white"
-                  : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border dark:border-gray-600 hover:bg-purple-50 dark:hover:bg-purple-900 active:bg-purple-100 dark:active:bg-purple-800"
+                  : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-[hsl(var(--border))] hover:bg-purple-50 dark:hover:bg-purple-900 active:bg-purple-100 dark:active:bg-purple-800"
               }`}
             >
               {room}
@@ -1698,10 +1705,10 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
           ◀
         </button>
         <div>
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+          <h2 className="text-xl font-semibold text-[hsl(var(--foreground))]">
             {formatDate(date, lang)}
           </h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-sm text-[hsl(var(--muted-foreground))] mt-1">
             {t(lang, "detailedView")}
           </p>
         </div>
@@ -1715,8 +1722,8 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
           }}
           className={`p-3 rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
             selectedTask === "task1"
-              ? "bg-blue-600 text-white"
-              : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900 active:bg-blue-100 dark:active:bg-blue-800"
+              ? "bg-[hsl(var(--blue))] text-white"
+              : "bg-[hsl(var(--card))] text-[hsl(var(--foreground))] border border-[hsl(var(--border))] hover:bg-blue-50 dark:hover:bg-blue-900 active:bg-blue-100 dark:active:bg-blue-800"
           }`}
         >
           <div className="flex flex-col items-center gap-1">
@@ -1732,7 +1739,7 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
           className={`p-3 rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
             selectedTask === "task2"
               ? "bg-orange-600 text-white"
-              : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border dark:border-gray-600 hover:bg-orange-50 dark:hover:bg-orange-900 active:bg-orange-100 dark:active:bg-orange-800"
+              : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-[hsl(var(--border))] hover:bg-orange-50 dark:hover:bg-orange-900 active:bg-orange-100 dark:active:bg-orange-800"
           }`}
         >
           <div className="flex flex-col items-center gap-1">
@@ -1748,7 +1755,7 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
           className={`p-3 rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
             selectedTask === "task3"
               ? "bg-purple-600 text-white"
-              : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border dark:border-gray-600 hover:bg-purple-50 dark:hover:bg-purple-900 active:bg-purple-100 dark:active:bg-purple-800"
+              : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-[hsl(var(--border))] hover:bg-purple-50 dark:hover:bg-purple-900 active:bg-purple-100 dark:active:bg-purple-800"
           }`}
         >
           <div className="flex flex-col items-center gap-1">
@@ -1758,11 +1765,144 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
         </button>
       </div>
 
-      <div className="rounded-xl shadow-md p-4 bg-white dark:bg-gray-800">
+      <div className="rounded-xl shadow-md p-4 bg-[hsl(var(--card))]">
         {selectedTask === "task1" && renderTask1Data()}
         {selectedTask === "task2" && renderTask2Data()}
         {selectedTask === "task3" && renderTask3Data()}
       </div>
+    </div>
+  );
+};
+
+// History View
+const HistoryView = ({ lang }) => {
+  const [savedDates, setSavedDates] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [toast, setToast] = useState({
+    show: false,
+    message: "",
+    type: "success",
+  });
+
+  useEffect(() => {
+    const dates = getAllSavedDates();
+    setSavedDates(dates);
+  }, []);
+
+  const showToast = (message, type = "success") => {
+    setToast({ show: true, message, type });
+    setTimeout(
+      () => setToast({ show: false, message: "", type: "success" }),
+      3000
+    );
+  };
+
+  const handleDeleteDate = (date) => {
+    vibrateDevice("buttonPress");
+    if (
+      window.confirm(`${t(lang, "deleteConfirm")} ${formatDate(date, lang)}?`)
+    ) {
+      vibrateDevice("delete");
+      const keysToDelete = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.includes(`-data-${date}`)) {
+          keysToDelete.push(key);
+        }
+      }
+
+      keysToDelete.forEach((key) => localStorage.removeItem(key));
+
+      const updatedDates = getAllSavedDates();
+      setSavedDates(updatedDates);
+      showToast(t(lang, "dataDeleted"));
+    }
+  };
+
+  if (selectedDate) {
+    return (
+      <HistoryDetailView
+        date={selectedDate}
+        onBack={() => setSelectedDate(null)}
+        lang={lang}
+      />
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <Toast
+        message={toast.message}
+        isVisible={toast.show}
+        onClose={() => setToast({ show: false, message: "", type: "success" })}
+        type={toast.type}
+      />
+
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-semibold text-[hsl(var(--foreground))] flex items-center gap-2">
+            <span className="text-xl">📚</span>
+            {t(lang, "historyTitle")}
+          </h2>
+          <p className="text-sm text-[hsl(var(--muted-foreground))] mt-1">
+            {t(lang, "recordsFound")}: {savedDates.length}
+          </p>
+        </div>
+      </div>
+
+      {savedDates.length === 0 ? (
+        <div className="text-center py-12">
+          <span className="text-6xl text-gray-300 dark:text-gray-600 mb-4 block">
+            📚
+          </span>
+          <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-300 mb-2">
+            {t(lang, "historyEmpty")}
+          </h3>
+          <p className="text-[hsl(var(--muted-foreground))]">
+            {t(lang, "saveDataPrompt")}
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {savedDates.map((date) => (
+            <div
+              key={date}
+              className="rounded-xl shadow-md p-4 bg-[hsl(var(--card))] border border-[hsl(var(--border))] hover:shadow-lg transition-shadow"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <h3 className="font-semibold text-[hsl(var(--foreground))]">
+                    {formatDate(date, lang)}
+                  </h3>
+                  <p className="text-sm text-[hsl(var(--muted-foreground))] mt-1">
+                    {date}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      vibrateDevice("buttonPress");
+                      setSelectedDate(date);
+                    }}
+                    className="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 text-white rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform font-medium flex items-center gap-2"
+                  >
+                    <span className="text-lg">👁️</span>
+                    {t(lang, "view")}
+                  </button>
+
+                  <button
+                    onClick={() => handleDeleteDate(date)}
+                    className="px-3 py-2 bg-red-500 hover:bg-red-600 active:bg-red-700 text-white rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform"
+                  >
+                    <span className="text-lg">🗑️</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
@@ -1777,94 +1917,106 @@ const SettingsView = ({
   setVibrationEnabled,
 }) => (
   <div className="space-y-6">
-    <h2 className="text-xl font-semibold dark:text-gray-100">
+    <h2 className="text-xl font-semibold text-[hsl(var(--foreground))]">
       ⚙️ {t(lang, "settings")}
     </h2>
 
-    <div>
-      <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
-        {t(lang, "language")}:
-      </label>
-      <select
-        value={lang}
-        onChange={(e) => {
-          vibrateDevice("buttonPress");
-          setLang(e.target.value);
-          saveToStorage("app-language", e.target.value);
-        }}
-        className="w-full p-2 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-      >
-        <option value="ua">{t(lang, "ukrainian")}</option>
-        <option value="en">{t(lang, "english")}</option>
-        <option value="nl">{t(lang, "dutch")}</option>
-      </select>
-    </div>
-
-    <div>
-      <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
-        {t(lang, "theme")}:
-      </label>
-      <div className="flex gap-2">
-        <button
-          onClick={() => {
-            vibrateDevice("buttonPress");
-            setTheme("light");
-          }}
-          className={`w-full p-2 rounded-lg transition ${
-            theme === "light"
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200 dark:bg-gray-700"
-          }`}
-        >
-          {t(lang, "light")}
-        </button>
-        <button
-          onClick={() => {
-            vibrateDevice("buttonPress");
-            setTheme("dark");
-          }}
-          className={`w-full p-2 rounded-lg transition ${
-            theme === "dark"
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200 dark:bg-gray-700"
-          }`}
-        >
-          {t(lang, "dark")}
-        </button>
+    <div className="rounded-xl shadow-md p-4 bg-[hsl(var(--card))] space-y-4">
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-[hsl(var(--foreground))]">
+          {t(lang, "language")}:
+        </label>
+        <div className="relative">
+          <select
+            value={lang}
+            onChange={(e) => {
+              vibrateDevice("buttonPress");
+              setLang(e.target.value);
+            }}
+            className="w-full p-3 rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] text-[hsl(var(--foreground))] appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] transition-all"
+          >
+            <option value="ua">{t(lang, "ukrainian")}</option>
+            <option value="en">{t(lang, "english")}</option>
+            <option value="nl">{t(lang, "dutch")}</option>
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-[hsl(var(--muted-foreground))]">
+            <svg
+              className="fill-current h-4 w-4"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+            >
+              <path d="M9.293 12.95l-.707.707L15 20l-5.707-5.707.707-.707L15 18.586 19.293 14.293l.707.707L15 20l-5.707-5.707z" />
+            </svg>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div>
-      <label className="block text-sm text-gray-600 dark:text-gray-400 mb-2">
-        {t(lang, "vibrationSetting")}:
-      </label>
-      <div className="flex gap-2">
-        <button
-          onClick={() => {
-            vibrateDevice("buttonPress");
-            setVibrationEnabled(true);
-          }}
-          className={`w-full p-2 rounded-lg transition ${
-            isVibrationEnabled
-              ? "bg-green-600 text-white"
-              : "bg-gray-200 dark:bg-gray-700"
-          }`}
-        >
-          {t(lang, "vibrationOn")}
-        </button>
-        <button
-          onClick={() => {
-            vibrateDevice("buttonPress");
-            setVibrationEnabled(false);
-          }}
-          className={`w-full p-2 rounded-lg transition ${
-            !isVibrationEnabled
-              ? "bg-red-600 text-white"
-              : "bg-gray-200 dark:bg-gray-700"
-          }`}
-        >
-          {t(lang, "vibrationOff")}
-        </button>
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-[hsl(var(--foreground))]">
+          {t(lang, "theme")}:
+        </label>
+        <div className="flex gap-2 p-1 bg-[hsl(var(--muted))] rounded-lg">
+          <button
+            onClick={() => {
+              vibrateDevice("buttonPress");
+              setTheme("light");
+            }}
+            className={`w-1/2 p-2 rounded-md font-medium transition-all ${
+              theme === "light"
+                ? "bg-[hsl(var(--card))] text-[hsl(var(--foreground))] shadow-sm"
+                : "text-[hsl(var(--muted-foreground))]"
+            }`}
+          >
+            {t(lang, "light")}
+          </button>
+          <button
+            onClick={() => {
+              vibrateDevice("buttonPress");
+              setTheme("dark");
+            }}
+            className={`w-1/2 p-2 rounded-md font-medium transition-all ${
+              theme === "dark"
+                ? "bg-[hsl(var(--card))] text-[hsl(var(--foreground))] shadow-sm"
+                : "text-[hsl(var(--muted-foreground))]"
+            }`}
+          >
+            {t(lang, "dark")}
+          </button>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-[hsl(var(--foreground))]">
+          {t(lang, "vibrationSetting")}:
+        </label>
+        <div className="flex gap-2 p-1 bg-[hsl(var(--muted))] rounded-lg">
+          <button
+            onClick={() => {
+              vibrateDevice("buttonPress");
+              setVibrationEnabled(true);
+            }}
+            className={`w-1/2 p-2 rounded-md font-medium transition-all ${
+              isVibrationEnabled
+                ? "bg-[hsl(var(--card))] text-[hsl(var(--foreground))] shadow-sm"
+                : "text-[hsl(var(--muted-foreground))]"
+            }`}
+          >
+            {t(lang, "vibrationOn")}
+          </button>
+          <button
+            onClick={() => {
+              vibrateDevice("buttonPress");
+              setVibrationEnabled(false);
+            }}
+            className={`w-1/2 p-2 rounded-md font-medium transition-all ${
+              !isVibrationEnabled
+                ? "bg-[hsl(var(--card))] text-[hsl(var(--foreground))] shadow-sm"
+                : "text-[hsl(var(--muted-foreground))]"
+            }`}
+          >
+            {t(lang, "vibrationOff")}
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -1911,15 +2063,21 @@ export default function App() {
 
   // Request wake lock when app starts
   useEffect(() => {
-    if (window.requestWakeLock) {
-      window.requestWakeLock();
-    }
+    if ("wakeLock" in navigator) {
+      const requestWakeLock = async () => {
+        try {
+          const wakeLock = await navigator.wakeLock.request("screen");
+          console.log("Wake lock is active.");
+          return () => wakeLock.release();
+        } catch (err) {
+          console.error(`${err.name}, ${err.message}`);
+          return () => {};
+        }
+      };
 
-    return () => {
-      if (window.releaseWakeLock) {
-        window.releaseWakeLock();
-      }
-    };
+      const releaseLock = requestWakeLock();
+      return () => releaseLock.then((release) => release());
+    }
   }, []);
 
   const handleTaskChange = (task) => {
@@ -1954,8 +2112,8 @@ export default function App() {
           onClick={() => handleTaskChange("settings")}
           className={`p-2 rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
             currentTask === "settings"
-              ? "bg-gray-800 text-white"
-              : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 active:bg-gray-100 dark:active:bg-gray-500"
+              ? "bg-[hsl(var(--primary))] text-white"
+              : "bg-[hsl(var(--card))] text-[hsl(var(--foreground))] border border-[hsl(var(--border))] hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600"
           }`}
         >
           <span className="text-lg">⚙️</span>
@@ -1964,7 +2122,7 @@ export default function App() {
 
       <div className="max-w-lg mx-auto pt-24">
         <div className="rounded-xl shadow-md p-4 bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] mx-4 mb-4">
-          <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-4">
+          <h2 className="text-xl font-semibold text-[hsl(var(--foreground))] mb-4">
             {t(lang, "chooseTask")}
           </h2>
           <div className="grid grid-cols-4 gap-3">
@@ -1973,7 +2131,7 @@ export default function App() {
               className={`p-3 rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
                 currentTask === "task1"
                   ? "bg-blue-600 text-white"
-                  : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border dark:border-gray-600 hover:bg-blue-50 dark:hover:bg-blue-900 active:bg-blue-100 dark:active:bg-blue-800"
+                  : "bg-[hsl(var(--card))] text-[hsl(var(--foreground))] border border-[hsl(var(--border))] hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600"
               }`}
             >
               <div className="flex flex-col items-center gap-1">
@@ -1988,7 +2146,7 @@ export default function App() {
               className={`p-3 rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
                 currentTask === "task2"
                   ? "bg-orange-600 text-white"
-                  : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border dark:border-gray-600 hover:bg-orange-50 dark:hover:bg-orange-900 active:bg-orange-100 dark:active:bg-orange-800"
+                  : "bg-[hsl(var(--card))] text-[hsl(var(--foreground))] border border-[hsl(var(--border))] hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600"
               }`}
             >
               <div className="flex flex-col items-center gap-1">
@@ -2001,7 +2159,7 @@ export default function App() {
               className={`p-3 rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
                 currentTask === "task3"
                   ? "bg-purple-600 text-white"
-                  : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border dark:border-gray-600 hover:bg-purple-50 dark:hover:bg-purple-900 active:bg-purple-100 dark:active:bg-purple-800"
+                  : "bg-[hsl(var(--card))] text-[hsl(var(--foreground))] border border-[hsl(var(--border))] hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600"
               }`}
             >
               <div className="flex flex-col items-center gap-1">
@@ -2014,7 +2172,7 @@ export default function App() {
               className={`p-3 rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
                 currentTask === "history"
                   ? "bg-indigo-600 text-white"
-                  : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border dark:border-gray-600 hover:bg-indigo-50 dark:hover:bg-indigo-900 active:bg-indigo-100 dark:active:bg-indigo-800"
+                  : "bg-[hsl(var(--card))] text-[hsl(var(--foreground))] border border-[hsl(var(--border))] hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600"
               }`}
             >
               <div className="flex flex-col items-center gap-1">
@@ -2047,7 +2205,7 @@ export default function App() {
         <div className="text-center mt-6 mx-4">
           <div className="flex items-center justify-center gap-2">
             <span className="text-xs text-gray-400 dark:text-gray-500">
-              Work Statistics PWA v1.5 🚀
+              Work Statistics PWA v1.52 🚀
             </span>
           </div>
         </div>
