@@ -615,26 +615,24 @@ const Counter = ({ value, onChange, label, lang, onClose }) => {
         <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-4">
           {label}
         </h2>
-        <div className="flex flex-col items-center gap-4">
-          <button
-            onClick={() => handleClick("increase")}
-            disabled={isThrottled}
-            className="w-full h-16 bg-green-500 hover:bg-green-600 active:bg-green-700 text-white rounded-xl shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold text-lg flex items-center justify-center gap-2 disabled:opacity-50"
-          >
-            <span className="text-2xl">➕</span>
-            {t(lang, "add")}
-          </button>
-          <div className="w-full rounded-xl shadow-md p-4 bg-white dark:bg-gray-700 border dark:border-gray-600">
-            <span className="text-5xl font-bold text-blue-600 dark:text-blue-400">
-              {value}
-            </span>
-            <p className="text-sm text-[hsl(var(--muted-foreground))] italic mt-2">
-              {t(lang, "units")}
-            </p>
-          </div>
+        <div className="rounded-xl shadow-md p-4 bg-white dark:bg-gray-700 border dark:border-gray-600">
+          <span className="text-5xl font-bold text-blue-600 dark:text-blue-400">
+            {value}
+          </span>
+          <p className="text-sm text-[hsl(var(--muted-foreground))] italic mt-2">
+            {t(lang, "units")}
+          </p>
         </div>
       </div>
       <div className="space-y-4">
+        <button
+          onClick={() => handleClick("increase")}
+          disabled={isThrottled}
+          className="w-full h-20 bg-green-500 hover:bg-green-600 active:bg-green-700 text-white rounded-xl shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold text-lg flex items-center justify-center gap-2 disabled:opacity-50"
+        >
+          <span className="text-2xl">➕</span>
+          {t(lang, "add")}
+        </button>
         <button
           onClick={() => handleClick("decrease")}
           disabled={isThrottled}
@@ -1769,139 +1767,6 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
   );
 };
 
-// History View
-const HistoryView = ({ lang }) => {
-  const [savedDates, setSavedDates] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [toast, setToast] = useState({
-    show: false,
-    message: "",
-    type: "success",
-  });
-
-  useEffect(() => {
-    const dates = getAllSavedDates();
-    setSavedDates(dates);
-  }, []);
-
-  const showToast = (message, type = "success") => {
-    setToast({ show: true, message, type });
-    setTimeout(
-      () => setToast({ show: false, message: "", type: "success" }),
-      3000
-    );
-  };
-
-  const handleDeleteDate = (date) => {
-    vibrateDevice("buttonPress");
-    if (
-      window.confirm(`${t(lang, "deleteConfirm")} ${formatDate(date, lang)}?`)
-    ) {
-      vibrateDevice("delete");
-      const keysToDelete = [];
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && key.includes(`-data-${date}`)) {
-          keysToDelete.push(key);
-        }
-      }
-
-      keysToDelete.forEach((key) => localStorage.removeItem(key));
-
-      const updatedDates = getAllSavedDates();
-      setSavedDates(updatedDates);
-      showToast(t(lang, "dataDeleted"));
-    }
-  };
-
-  if (selectedDate) {
-    return (
-      <HistoryDetailView
-        date={selectedDate}
-        onBack={() => setSelectedDate(null)}
-        lang={lang}
-      />
-    );
-  }
-
-  return (
-    <div className="space-y-6">
-      <Toast
-        message={toast.message}
-        isVisible={toast.show}
-        onClose={() => setToast({ show: false, message: "", type: "success" })}
-        type={toast.type}
-      />
-
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-            <span className="text-xl">📚</span>
-            {t(lang, "historyTitle")}
-          </h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            {t(lang, "recordsFound")}: {savedDates.length}
-          </p>
-        </div>
-      </div>
-
-      {savedDates.length === 0 ? (
-        <div className="text-center py-12">
-          <span className="text-6xl text-gray-300 dark:text-gray-600 mb-4 block">
-            📚
-          </span>
-          <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-300 mb-2">
-            {t(lang, "historyEmpty")}
-          </h3>
-          <p className="text-gray-500 dark:text-gray-400">
-            {t(lang, "saveDataPrompt")}
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {savedDates.map((date) => (
-            <div
-              key={date}
-              className="rounded-xl shadow-md p-4 bg-white dark:bg-gray-800 border dark:border-gray-700 hover:shadow-lg transition-shadow"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900 dark:text-gray-100">
-                    {formatDate(date, lang)}
-                  </h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    {date}
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => {
-                      vibrateDevice("buttonPress");
-                      setSelectedDate(date);
-                    }}
-                    className="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 text-white rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform font-medium flex items-center gap-2"
-                  >
-                    <span className="text-lg">👁️</span>
-                    {t(lang, "view")}
-                  </button>
-
-                  <button
-                    onClick={() => handleDeleteDate(date)}
-                    className="px-3 py-2 bg-red-500 hover:bg-red-600 active:bg-red-700 text-white rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform"
-                  >
-                    <span className="text-lg">🗑️</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
-
 // Settings View
 const SettingsView = ({
   lang,
@@ -2182,7 +2047,7 @@ export default function App() {
         <div className="text-center mt-6 mx-4">
           <div className="flex items-center justify-center gap-2">
             <span className="text-xs text-gray-400 dark:text-gray-500">
-              Work Statistics PWA v1.49 🚀
+              Work Statistics PWA v1.5 🚀
             </span>
           </div>
         </div>
