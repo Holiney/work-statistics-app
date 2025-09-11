@@ -22,6 +22,7 @@ const translations = {
     export: "Експорт",
     install: "Встановити",
     view: "Переглянути",
+    ok: "ОК",
 
     // Статуси
     noData: "Немає збережених даних",
@@ -107,6 +108,7 @@ const translations = {
     export: "Export",
     install: "Install",
     view: "View",
+    ok: "OK",
 
     // Statuses
     noData: "No saved data",
@@ -192,6 +194,7 @@ const translations = {
     export: "Exporteren",
     install: "Installeren",
     view: "Bekijken",
+    ok: "OK",
 
     // Statussen
     noData: "Geen opgeslagen gegevens",
@@ -586,7 +589,7 @@ const BottomSheet = ({ isOpen, onClose, title, children }) => {
 
 // Counter Component
 
-const Counter = ({ value, onChange, label, lang }) => {
+const Counter = ({ value, onChange, label, lang, onClose }) => {
   const [isThrottled, setIsThrottled] = useState(false);
 
   const handleClick = (action) => {
@@ -612,24 +615,26 @@ const Counter = ({ value, onChange, label, lang }) => {
         <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-4">
           {label}
         </h2>
-        <div className="rounded-xl shadow-md p-4 bg-white dark:bg-gray-700 border dark:border-gray-600">
-          <span className="text-5xl font-bold text-blue-600 dark:text-blue-400">
-            {value}
-          </span>
-          <p className="text-sm text-[hsl(var(--muted-foreground))] italic mt-2">
-            {t(lang, "units")}
-          </p>
+        <div className="flex flex-col items-center gap-4">
+          <button
+            onClick={() => handleClick("increase")}
+            disabled={isThrottled}
+            className="w-full h-16 bg-green-500 hover:bg-green-600 active:bg-green-700 text-white rounded-xl shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold text-lg flex items-center justify-center gap-2 disabled:opacity-50"
+          >
+            <span className="text-2xl">➕</span>
+            {t(lang, "add")}
+          </button>
+          <div className="w-full rounded-xl shadow-md p-4 bg-white dark:bg-gray-700 border dark:border-gray-600">
+            <span className="text-5xl font-bold text-blue-600 dark:text-blue-400">
+              {value}
+            </span>
+            <p className="text-sm text-[hsl(var(--muted-foreground))] italic mt-2">
+              {t(lang, "units")}
+            </p>
+          </div>
         </div>
       </div>
       <div className="space-y-4">
-        <button
-          onClick={() => handleClick("increase")}
-          disabled={isThrottled}
-          className="w-full h-20 bg-green-500 hover:bg-green-600 active:bg-green-700 text-white rounded-xl shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold text-lg flex items-center justify-center gap-2 disabled:opacity-50"
-        >
-          <span className="text-2xl">➕</span>
-          {t(lang, "add")}
-        </button>
         <button
           onClick={() => handleClick("decrease")}
           disabled={isThrottled}
@@ -637,6 +642,12 @@ const Counter = ({ value, onChange, label, lang }) => {
         >
           <span className="text-xl">➖</span>
           {t(lang, "subtract")}
+        </button>
+        <button
+          onClick={onClose}
+          className="w-full h-16 bg-gray-200 hover:bg-gray-300 active:bg-gray-400 dark:bg-gray-700 dark:hover:bg-gray-600 dark:active:bg-gray-500 text-gray-800 dark:text-gray-100 rounded-xl shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold"
+        >
+          {t(lang, "ok")}
         </button>
       </div>
     </div>
@@ -666,7 +677,6 @@ const NumberGrid = ({ value, onChange, label, onClose, lang, options }) => {
             onClick={() => {
               vibrateDevice("buttonPress");
               onChange(option === "–" ? 0 : option);
-              onClose();
             }}
             className={`h-12 text-sm font-bold rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
               value === option || (value === 0 && option === "–")
@@ -678,6 +688,12 @@ const NumberGrid = ({ value, onChange, label, onClose, lang, options }) => {
           </button>
         ))}
       </div>
+      <button
+        onClick={onClose}
+        className="w-full mt-6 h-16 bg-gray-200 hover:bg-gray-300 active:bg-gray-400 dark:bg-gray-700 dark:hover:bg-gray-600 dark:active:bg-gray-500 text-gray-800 dark:text-gray-100 rounded-xl shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold"
+      >
+        {t(lang, "ok")}
+      </button>
     </div>
   );
 };
@@ -904,6 +920,7 @@ const Task1PersonnelCars = ({ lang }) => {
             onChange={(count) => updatePersonnel(selectedZone, count)}
             label={`${t(lang, "workersCount")} ${selectedZone}`}
             lang={lang}
+            onClose={() => setSelectedZone(null)}
           />
         ) : selectedZone === "Parking" ? (
           <Counter
@@ -911,6 +928,7 @@ const Task1PersonnelCars = ({ lang }) => {
             onChange={(count) => !isSaved && setCarsCount(count)}
             label={t(lang, "carsCount")}
             lang={lang}
+            onClose={() => setSelectedZone(null)}
           />
         ) : null}
       </BottomSheet>
@@ -1091,6 +1109,7 @@ const Task2BikeParking = ({ lang }) => {
             onChange={(count) => updateBike(selectedBikeType, count)}
             label={`${t(lang, "quantity")}: ${selectedBikeType}`}
             lang={lang}
+            onClose={() => setSelectedBikeType(null)}
           />
         )}
       </BottomSheet>
@@ -1883,72 +1902,6 @@ const HistoryView = ({ lang }) => {
   );
 };
 
-// PWA Status Component
-const PWAStatus = ({ lang }) => {
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const [isInstalled, setIsInstalled] = useState(false);
-
-  useEffect(() => {
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
-
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
-
-    const isStandalone =
-      window.matchMedia("(display-mode: standalone)").matches ||
-      window.navigator.standalone === true;
-    setIsInstalled(isStandalone);
-
-    return () => {
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
-    };
-  }, []);
-
-  return (
-    <div className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900 dark:to-purple-900 border border-indigo-200 dark:border-indigo-800 rounded-xl shadow-md p-4 mx-4 mb-4">
-      <h3 className="font-semibold text-indigo-800 dark:text-indigo-200 mb-3 flex items-center gap-2">
-        📱 {t(lang, "pwaStatus")}:
-      </h3>
-      <div className="grid grid-cols-2 gap-4 text-sm">
-        <div className="flex items-center gap-2">
-          <span
-            className={`w-3 h-3 rounded-full ${
-              isOnline ? "bg-green-500" : "bg-red-500"
-            }`}
-          ></span>
-          <span className="text-gray-700 dark:text-gray-300">
-            {isOnline ? t(lang, "online") : t(lang, "offline")}
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span
-            className={`w-3 h-3 rounded-full ${
-              isInstalled ? "bg-green-500" : "bg-orange-500"
-            }`}
-          ></span>
-          <span className="text-gray-700 dark:text-gray-300">
-            {isInstalled ? t(lang, "installed") : t(lang, "inBrowser")}
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="w-3 h-3 bg-green-500 rounded-full"></span>
-          <span className="text-gray-700 dark:text-gray-300">
-            {t(lang, "vibration")}
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="w-3 h-3 bg-green-500 rounded-full"></span>
-          <span className="text-gray-700 dark:text-gray-300">
-            {t(lang, "localStorage")}
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 // Settings View
 const SettingsView = ({
   lang,
@@ -2122,29 +2075,29 @@ export default function App() {
     <div className="min-h-screen bg-[hsl(var(--background))] text-[hsl(var(--foreground))] pb-4">
       <PWAInstallBanner lang={lang} />
 
-      <div className="max-w-lg mx-auto">
-        <header className="rounded-xl shadow-md p-4 bg-[hsl(var(--card))] mb-4 mx-4 flex items-center justify-between">
-          <div className="text-center flex-grow">
-            <h1 className="text-2xl font-bold text-[hsl(var(--card-foreground))]flex items-center justify-center gap-3">
-              <span className="text-2xl">📊</span>
-              {t(lang, "appTitle")}
-            </h1>
-            <p className="text-sm text-[hsl(var(--muted-foreground))] italic mt-2">
-              {t(lang, "appDesc")}
-            </p>
-          </div>
-          <button
-            onClick={() => handleTaskChange("settings")}
-            className={`p-3 rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
-              currentTask === "settings"
-                ? "bg-gray-800 text-white"
-                : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 active:bg-gray-100 dark:active:bg-gray-500"
-            }`}
-          >
-            <span className="text-xl">⚙️</span>
-          </button>
-        </header>
+      <header className="fixed top-0 left-0 right-0 z-50 py-3 px-4 bg-[hsl(var(--card))] shadow-lg flex items-center justify-between">
+        <div className="text-left">
+          <h1 className="text-lg font-bold text-[hsl(var(--card-foreground))] flex items-center gap-2">
+            <span className="text-xl">📊</span>
+            {t(lang, "appTitle")}
+          </h1>
+          <p className="text-xs text-[hsl(var(--muted-foreground))] italic">
+            {t(lang, "appDesc")}
+          </p>
+        </div>
+        <button
+          onClick={() => handleTaskChange("settings")}
+          className={`p-2 rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
+            currentTask === "settings"
+              ? "bg-gray-800 text-white"
+              : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 active:bg-gray-100 dark:active:bg-gray-500"
+          }`}
+        >
+          <span className="text-lg">⚙️</span>
+        </button>
+      </header>
 
+      <div className="max-w-lg mx-auto pt-24">
         <div className="rounded-xl shadow-md p-4 bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] mx-4 mb-4">
           <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-4">
             {t(lang, "chooseTask")}
@@ -2226,12 +2179,10 @@ export default function App() {
           )}
         </div>
 
-        <PWAStatus lang={lang} />
-
         <div className="text-center mt-6 mx-4">
           <div className="flex items-center justify-center gap-2">
             <span className="text-xs text-gray-400 dark:text-gray-500">
-              Work Statistics PWA v1.48 🚀
+              Work Statistics PWA v1.49 🚀
             </span>
           </div>
         </div>
