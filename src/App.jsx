@@ -347,6 +347,7 @@ const vibrateDevice = (pattern) => {
 const loadFromStorage = (key, defaultValue) => {
   try {
     const data = localStorage.getItem(key);
+    // Use nullish coalescing to handle null or undefined data
     return data ? JSON.parse(data) : defaultValue;
   } catch (e) {
     console.error("Error loading from storage:", e);
@@ -817,7 +818,7 @@ const Task1PersonnelCars = ({ lang }) => {
                     : "bg-blue-600 text-white"
                 }`}
               >
-                {personnelData[zone] || 0}
+                {personnelData[zone] ?? 0}
               </span>
             </button>
           ))}
@@ -899,7 +900,7 @@ const Task1PersonnelCars = ({ lang }) => {
       >
         {selectedZone && selectedZone !== "Parking" ? (
           <Counter
-            value={personnelData[selectedZone] || 0}
+            value={personnelData[selectedZone] ?? 0}
             onChange={(count) => updatePersonnel(selectedZone, count)}
             label={`${t(lang, "workersCount")} ${selectedZone}`}
             lang={lang}
@@ -1036,7 +1037,7 @@ const Task2BikeParking = ({ lang }) => {
                     : "bg-orange-600 text-white"
                 }`}
               >
-                {bikeData[type] || 0}
+                {bikeData[type] ?? 0}
               </span>
             </button>
           ))}
@@ -1086,7 +1087,7 @@ const Task2BikeParking = ({ lang }) => {
       >
         {selectedBikeType && (
           <Counter
-            value={bikeData[selectedBikeType] || 0}
+            value={bikeData[selectedBikeType] ?? 0}
             onChange={(count) => updateBike(selectedBikeType, count)}
             label={`${t(lang, "quantity")}: ${selectedBikeType}`}
             lang={lang}
@@ -1115,7 +1116,14 @@ const Task3PrintRooms = ({ lang }) => {
       `task3-data-${todayKey}-${selectedRoom}`,
       {}
     );
-    const hasRoomData = Object.values(currentData).some((count) => count > 0);
+    const hasRoomData = Object.values(currentData).some(
+      (count) =>
+        count > 0 ||
+        (count === 0 &&
+          getOptionsForItem(
+            Object.keys(currentData).find((key) => currentData[key] === 0)
+          )?.includes("–"))
+    );
 
     setPrintData(currentData);
     setIsSaved(hasRoomData);
@@ -1133,6 +1141,12 @@ const Task3PrintRooms = ({ lang }) => {
     switch (item) {
       case "EK 1":
       case "EK 2":
+      case "EK 8A":
+      case "EK 8B":
+      case "EK 8C":
+      case "EK 9A":
+      case "EK 9B":
+      case "EK 9C":
         return Array.from({ length: 6 }, (_, i) => i); // 0-5
       case "EK 3":
       case "EK 4":
@@ -1146,13 +1160,6 @@ const Task3PrintRooms = ({ lang }) => {
       case "EK 7C":
       case "EK 10B":
         return Array.from({ length: 21 }, (_, i) => i); // 0-20
-      case "EK 8A":
-      case "EK 8B":
-      case "EK 8C":
-      case "EK 9A":
-      case "EK 9B":
-      case "EK 9C":
-        return Array.from({ length: 6 }, (_, i) => i); // 0-5
       case "EK 11A":
       case "EK 11B":
       case "EK 12":
@@ -1176,7 +1183,10 @@ const Task3PrintRooms = ({ lang }) => {
   };
 
   const handleSave = () => {
-    const hasData = Object.values(printData).some((count) => count > 0);
+    const hasData = Object.entries(printData).some(
+      ([item, count]) =>
+        count > 0 || (count === 0 && getOptionsForItem(item).includes("–"))
+    );
     if (!hasData) {
       showToast(t(lang, "noDataToSave"), "error");
       return;
@@ -1198,8 +1208,8 @@ const Task3PrintRooms = ({ lang }) => {
   const handleCopy = () => {
     const entries = [];
     Object.entries(printData).forEach(([item, count]) => {
-      if (count > 0) {
-        entries.push(`${item}: ${count}`);
+      if (count > 0 || (count === 0 && getOptionsForItem(item).includes("–"))) {
+        entries.push(`${item}: ${count === 0 ? "–" : count}`);
       }
     });
 
@@ -1282,7 +1292,7 @@ const Task3PrintRooms = ({ lang }) => {
                       : "bg-purple-600 text-white"
                   }`}
                 >
-                  {printData[item] ||
+                  {printData[item] ??
                     (getOptionsForItem(item).includes("–") ? "–" : 0)}
                 </span>
                 <span className="text-gray-400 dark:text-gray-500">▶</span>
@@ -1335,7 +1345,7 @@ const Task3PrintRooms = ({ lang }) => {
       >
         {selectedItem && (
           <NumberGrid
-            value={printData[selectedItem] || 0}
+            value={printData[selectedItem] ?? 0}
             onChange={(count) => updateItem(selectedItem, count)}
             label={`${t(lang, "quantity")}: ${selectedItem}`}
             onClose={() => setSelectedItem(null)}
@@ -1360,6 +1370,45 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
   const showToast = (message, type = "success") => {
     setToast({ show: true, message, type });
     setTimeout(() => setToast({ show: false, message: "" }), 2000);
+  };
+
+  const getOptionsForItem = (item) => {
+    switch (item) {
+      case "EK 1":
+      case "EK 2":
+      case "EK 8A":
+      case "EK 8B":
+      case "EK 8C":
+      case "EK 9A":
+      case "EK 9B":
+      case "EK 9C":
+        return Array.from({ length: 6 }, (_, i) => i); // 0-5
+      case "EK 3":
+      case "EK 4":
+      case "EK 10A":
+        return Array.from({ length: 11 }, (_, i) => i); // 0-10
+      case "EK 5":
+      case "EK 6":
+        return Array.from({ length: 11 }, (_, i) => i * 10); // 0, 10, 20...100
+      case "EK 7A":
+      case "EK 7B":
+      case "EK 7C":
+      case "EK 10B":
+        return Array.from({ length: 21 }, (_, i) => i); // 0-20
+      case "EK 11A":
+      case "EK 11B":
+      case "EK 12":
+      case "EK 13":
+      case "EK 14":
+      case "EK 15":
+      case "EK 16":
+      case "EK 17":
+      case "EK 18":
+      case "EK 19":
+        return ["–", 1]; // 1, - (represented as 0 and –)
+      default:
+        return Array.from({ length: 21 }, (_, i) => i); // Default 0-20
+    }
   };
 
   const renderTask1Data = () => {
@@ -1513,7 +1562,14 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
 
   const renderTask3Data = () => {
     const hasData = Object.values(task3Data).some((roomData) =>
-      Object.values(roomData || {}).some((count) => count > 0)
+      Object.values(roomData || {}).some(
+        (count) =>
+          count > 0 ||
+          (count === 0 &&
+            getOptionsForItem(
+              Object.keys(roomData).find((key) => roomData[key] === 0)
+            )?.includes("–"))
+      )
     );
 
     if (!hasData) {
@@ -1523,13 +1579,14 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
         </div>
       );
     }
+
     const entries = [];
     Object.entries(task3Data).forEach(([room, roomData]) => {
       const roomEntries = [];
       Object.entries(roomData || {}).forEach(([item, count]) => {
         if (
           count > 0 ||
-          (getOptionsForItem(item).includes("–") && count === 0)
+          (count === 0 && getOptionsForItem(item).includes("–"))
         ) {
           roomEntries.push(`${item}: ${count === 0 ? "–" : count}`);
         }
@@ -1566,7 +1623,12 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
         </h4>
         {Object.entries(task3Data).map(([room, roomData]) => {
           const hasRoomData = Object.values(roomData || {}).some(
-            (count) => count > 0
+            (count) =>
+              count > 0 ||
+              (count === 0 &&
+                getOptionsForItem(
+                  Object.keys(roomData).find((key) => roomData[key] === count)
+                )?.includes("–"))
           );
           if (!hasRoomData) return null;
 
@@ -1579,8 +1641,8 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
                 {Object.entries(roomData).map(
                   ([item, count]) =>
                     (count > 0 ||
-                      (getOptionsForItem(item).includes("–") &&
-                        count === 0)) && (
+                      (count === 0 &&
+                        getOptionsForItem(item).includes("–"))) && (
                       <div
                         key={item}
                         className="flex justify-between items-center p-2 bg-purple-50 dark:bg-purple-900 rounded-lg"
@@ -2180,7 +2242,7 @@ export default function App() {
         <div className="text-center mt-6 mx-4">
           <div className="flex items-center justify-center gap-2">
             <span className="text-xs text-gray-400 dark:text-gray-500">
-              Work Statistics PWA v1.46 🚀
+              Work Statistics PWA v1.41 🚀
             </span>
           </div>
         </div>
