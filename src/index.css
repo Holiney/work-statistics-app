@@ -1,77 +1,100 @@
 @import "tailwindcss";
+
 @layer base {
   :root {
     /* Light Theme Palette */
-    --background: 220 14% 96.1%; /* A very light gray, almost off-white */
-    --foreground: 220 14% 20%; /* A dark charcoal gray for text */
-    
-    --card: 0 0% 100%; /* Pure white for cards/components */
+    --background: 220 14% 96.1%;
+    --foreground: 220 14% 20%;
+    --card: 0 0% 100%;
     --card-foreground: 220 14% 20%;
-    
-    --muted: 220 14% 90%; /* A light gray for secondary backgrounds */
-    --muted-foreground: 220 14% 50%; /* A medium gray for muted text */
-    
-    --border: 220 14% 85%; /* A subtle light gray for borders */
-    
-    --primary: 210 100% 50%; /* A vibrant blue for primary actions */
-    --primary-foreground: 0 0% 100%; /* White text on primary */
-    
-    --secondary: 220 14% 92%; /* A light gray for secondary buttons */
-    --secondary-foreground: 220 14% 30%;
-    
-    --accent: 210 100% 90%; /* A very light blue for accents */
-    --accent-foreground: 210 100% 30%;
-    
-    --destructive: 0 84.2% 60.2%; /* A red for destructive actions */
-    --destructive-foreground: 0 0% 100%;
-    
-    /* Specific Task Colors (for consistency) */
-    --task1-accent: 217.2 91.2% 59.8%; /* Blue */
-    --task2-accent: 30.5 73.5% 53.3%; /* Orange */
-    --task3-accent: 284.1 63.3% 40.8%; /* Purple */
-    --history-accent: 240 5.9% 90%; /* Indigo */
-    --select-item-hover-background: 220 14% 92%; /* A light gray for hover */
-    --select-item-hover-foreground: 220 14% 20%; /* Dark text for hover */
-    --select-item-selected-background: 220 14% 85%; /* Slightly darker for selected */
-    --select-item-selected-foreground: 220 14% 20%; /* Dark text for selected */
-  }
-
-  .dark {
-    /* Dark Theme Palette */
-    --background: 220 14% 10%; /* A very dark charcoal */
-    --foreground: 220 14% 85%; /* A light gray for text */
-
-    --card: 220 14% 15%; /* A slightly lighter charcoal for cards */
-    --card-foreground: 220 14% 85%;
-
-    --muted: 220 14% 20%;
-    --muted-foreground: 220 14% 60%;
-
-    --border: 220 14% 25%;
-
-    --primary: 210 100% 60%; /* A slightly brighter blue for better visibility */
+    --muted: 220 14% 90%;
+    --muted-foreground: 220 14% 50%;
+    --border: 220 14% 85%;
+    --primary: 210 100% 50%;
     --primary-foreground: 0 0% 100%;
-
-    --secondary: 220 14% 20%;
-    --secondary-foreground: 220 14% 75%;
-
-    --accent: 210 100% 20%;
-    --accent-foreground: 210 100% 70%;
-
+    --secondary: 220 14% 92%;
+    --secondary-foreground: 220 14% 30%;
+    --accent: 210 100% 90%;
+    --accent-foreground: 210 100% 30%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
-    
-    /* Specific Task Colors */
     --task1-accent: 217.2 91.2% 59.8%;
     --task2-accent: 30.5 73.5% 53.3%;
     --task3-accent: 284.1 63.3% 40.8%;
     --history-accent: 240 5.9% 90%;
-    --select-item-hover-background: 220 14% 20%; /* Darker charcoal for hover */
-    --select-item-hover-foreground: 220 14% 95%; /* Light text for hover */
-    --select-item-selected-background: 220 14% 25%; /* Darker for selected */
-    --select-item-selected-foreground: 220 14% 95%; /* Light text for selected */
+    --select-item-hover-background: 220 14% 92%;
+    --select-item-hover-foreground: 220 14% 20%;
+    --select-item-selected-background: 220 14% 85%;
+    --select-item-selected-foreground: 220 14% 20%;
+  }
+
+  .dark {
+    /* Dark Theme Palette */
+    --background: 220 14% 10%;
+    --foreground: 220 14% 85%;
+    --card: 220 14% 15%;
+    --card-foreground: 220 14% 85%;
+    --muted: 220 14% 20%;
+    --muted-foreground: 220 14% 60%;
+    --border: 220 14% 25%;
+    --primary: 210 100% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 14% 20%;
+    --secondary-foreground: 220 14% 75%;
+    --accent: 210 100% 20%;
+    --accent-foreground: 210 100% 70%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+    --task1-accent: 217.2 91.2% 59.8%;
+    --task2-accent: 30.5 73.5% 53.3%;
+    --task3-accent: 284.1 63.3% 40.8%;
+    --history-accent: 240 5.9% 90%;
+    --select-item-hover-background: 220 14% 20%;
+    --select-item-hover-foreground: 220 14% 95%;
+    --select-item-selected-background: 220 14% 25%;
+    --select-item-selected-foreground: 220 14% 95%;
+  }
+  
+  .purple {
+    /* Custom Theme Palette based on the image */
+    --background-start: 246 39% 19%;
+    --background-end: 285 53% 26%;
+    --foreground: 0 0% 98%;
+    
+    --card: 260 25% 25%;
+    --card-foreground: 0 0% 98%;
+    
+    --muted: 260 25% 30%;
+    --muted-foreground: 0 0% 70%;
+    
+    --border: 260 25% 35%;
+    
+    --primary: 290 60% 55%; /* A vibrant purple-pink for primary actions */
+    --primary-foreground: 0 0% 98%;
+    
+    --secondary: 260 25% 35%;
+    --secondary-foreground: 0 0% 90%;
+    
+    --accent: 275 70% 65%;
+    --accent-foreground: 0 0% 98%;
+    
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --task1-accent: 217.2 91.2% 59.8%;
+    --task2-accent: 30.5 73.5% 53.3%;
+    --task3-accent: 284.1 63.3% 40.8%;
+    --history-accent: 240 5.9% 90%;
+    --select-item-hover-background: 260 25% 30%;
+    --select-item-hover-foreground: 0 0% 98%;
+    --select-item-selected-background: 260 25% 35%;
+    --select-item-selected-foreground: 0 0% 98%;
   }
 }
 body {
   overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+}
+.purple body {
+  background: linear-gradient(135deg, hsl(var(--background-start)) 0%, hsl(var(--background-end)) 100%);
 }

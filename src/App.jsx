@@ -83,6 +83,7 @@ const translations = {
     theme: "Тема",
     light: "Світла",
     dark: "Темна",
+    purple: "Фіолетова",
     vibrationSetting: "Вібрація",
     vibrationOn: "Увімкнено",
     vibrationOff: "Вимкнено",
@@ -169,6 +170,7 @@ const translations = {
     theme: "Theme",
     light: "Light",
     dark: "Dark",
+    purple: "Purple",
     vibrationSetting: "Vibration",
     vibrationOn: "On",
     vibrationOff: "Off",
@@ -247,7 +249,7 @@ const translations = {
     vibration: "Trillen",
     localStorage: "Lokale opslag",
 
-    // Instellingen
+    // Settings
     language: "Taal",
     ukrainian: "Українська",
     english: "English",
@@ -255,6 +257,7 @@ const translations = {
     theme: "Thema",
     light: "Licht",
     dark: "Donker",
+    purple: "Paars",
     vibrationSetting: "Trillen",
     vibrationOn: "Aan",
     vibrationOff: "Uit",
@@ -1961,7 +1964,7 @@ const SettingsView = ({
               vibrateDevice("buttonPress");
               setTheme("light");
             }}
-            className={`w-1/2 p-2 rounded-md font-medium transition-all ${
+            className={`w-1/3 p-2 rounded-md font-medium transition-all ${
               theme === "light"
                 ? "bg-[hsl(var(--card))] text-[hsl(var(--foreground))] shadow-sm"
                 : "text-[hsl(var(--muted-foreground))]"
@@ -1974,13 +1977,26 @@ const SettingsView = ({
               vibrateDevice("buttonPress");
               setTheme("dark");
             }}
-            className={`w-1/2 p-2 rounded-md font-medium transition-all ${
+            className={`w-1/3 p-2 rounded-md font-medium transition-all ${
               theme === "dark"
                 ? "bg-[hsl(var(--card))] text-[hsl(var(--foreground))] shadow-sm"
                 : "text-[hsl(var(--muted-foreground))]"
             }`}
           >
             {t(lang, "dark")}
+          </button>
+          <button
+            onClick={() => {
+              vibrateDevice("buttonPress");
+              setTheme("purple");
+            }}
+            className={`w-1/3 p-2 rounded-md font-medium transition-all ${
+              theme === "purple"
+                ? "bg-[hsl(var(--card))] text-[hsl(var(--foreground))] shadow-sm"
+                : "text-[hsl(var(--muted-foreground))]"
+            }`}
+          >
+            {t(lang, "purple")}
           </button>
         </div>
       </div>
@@ -2048,11 +2064,8 @@ export default function App() {
 
   useEffect(() => {
     const root = window.document.documentElement;
-    if (theme === "dark") {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
+    root.classList.remove("light", "dark", "purple");
+    root.classList.add(theme);
   }, [theme]);
 
   // Swipe logic
@@ -2176,7 +2189,7 @@ export default function App() {
         onTouchEnd={handleTouchEnd}
       >
         <div className="rounded-xl shadow-md p-4 bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] mx-4 mb-4 relative">
-          <div className="flex items-start justify-between mb-4">
+          <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold text-[hsl(var(--foreground))]">
               {t(lang, "chooseTask")}
             </h2>
@@ -2257,7 +2270,7 @@ export default function App() {
         <div className="text-center mt-6 mx-4">
           <div className="flex items-center justify-center gap-2">
             <span className="text-xs text-gray-400 dark:text-gray-500">
-              Work Statistics PWA v1.61 🚀
+              Work Statistics PWA v4.1.2 🚀
             </span>
           </div>
         </div>
