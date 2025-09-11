@@ -1,5 +1,6 @@
-@import "tailwindcss";
-
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
 @layer base {
   :root {
@@ -32,10 +33,10 @@
     --task2-accent: 30.5 73.5% 53.3%; /* Orange */
     --task3-accent: 284.1 63.3% 40.8%; /* Purple */
     --history-accent: 240 5.9% 90%; /* Indigo */
-      --select-item-hover-background: 220 14% 92%; /* A light gray for hover */
-  --select-item-hover-foreground: 220 14% 20%; /* Dark text for hover */
-  --select-item-selected-background: 220 14% 85%; /* Slightly darker for selected */
-  --select-item-selected-foreground: 220 14% 20%; /* Dark text for selected */
+    --select-item-hover-background: 220 14% 92%; /* A light gray for hover */
+    --select-item-hover-foreground: 220 14% 20%; /* Dark text for hover */
+    --select-item-selected-background: 220 14% 85%; /* Slightly darker for selected */
+    --select-item-selected-foreground: 220 14% 20%; /* Dark text for selected */
   }
 
   .dark {
@@ -69,11 +70,11 @@
     --task3-accent: 284.1 63.3% 40.8%;
     --history-accent: 240 5.9% 90%;
     --select-item-hover-background: 220 14% 20%; /* Darker charcoal for hover */
-  --select-item-hover-foreground: 220 14% 95%; /* Light text for hover */
-  --select-item-selected-background: 220 14% 25%; /* Darker for selected */
-  --select-item-selected-foreground: 220 14% 95%; /* Light text for selected */
+    --select-item-hover-foreground: 220 14% 95%; /* Light text for hover */
+    --select-item-selected-background: 220 14% 25%; /* Darker for selected */
+    --select-item-selected-foreground: 220 14% 95%; /* Light text for selected */
   }
 }
 body {
-  overscroll-behavior-y: none;
+  overscroll-behavior: none;
 }
