@@ -2175,10 +2175,23 @@ export default function App() {
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
-        <div className="rounded-xl shadow-md p-4 bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] mx-4 mb-4">
-          <h2 className="text-xl font-semibold text-[hsl(var(--foreground))] mb-4">
-            {t(lang, "chooseTask")}
-          </h2>
+        <div className="rounded-xl shadow-md p-4 bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] mx-4 mb-4 relative">
+          <div className="flex items-start justify-between mb-4">
+            <h2 className="text-xl font-semibold text-[hsl(var(--foreground))]">
+              {t(lang, "chooseTask")}
+            </h2>
+            <button
+              onClick={() => handleTaskChange("history")}
+              className={`p-2 rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform text-sm font-medium flex items-center gap-1 ${
+                currentTask === "history"
+                  ? "bg-indigo-600 text-white"
+                  : "bg-[hsl(var(--card))] text-[hsl(var(--foreground))] border border-[hsl(var(--border))] hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600"
+              }`}
+            >
+              <span className="text-xl">📚</span>
+              {t(lang, "history")}
+            </button>
+          </div>
           <div className="grid grid-cols-3 gap-3">
             <button
               onClick={() => handleTaskChange("task1")}
@@ -2224,20 +2237,6 @@ export default function App() {
           </div>
         </div>
 
-        <button
-          onClick={() => handleTaskChange("history")}
-          className={`w-full p-3 rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
-            currentTask === "history"
-              ? "bg-indigo-600 text-white"
-              : "bg-[hsl(var(--card))] text-[hsl(var(--foreground))] border border-[hsl(var(--border))] hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600"
-          } mx-4 mb-4`}
-        >
-          <div className="flex items-center justify-center gap-2">
-            <span className="text-xl">📚</span>
-            <span className="text-lg font-medium">{t(lang, "history")}</span>
-          </div>
-        </button>
-
         <div className="rounded-xl shadow-md p-4 bg-[hsl(var(--card))] text-[hsl(var(--card-foreground))] mx-4 mb-4">
           {currentTask === "task1" && <Task1PersonnelCars lang={lang} />}
           {currentTask === "task2" && <Task2BikeParking lang={lang} />}
@@ -2258,7 +2257,7 @@ export default function App() {
         <div className="text-center mt-6 mx-4">
           <div className="flex items-center justify-center gap-2">
             <span className="text-xs text-gray-400 dark:text-gray-500">
-              Work Statistics PWA v1.6 🚀
+              Work Statistics PWA v1.61 🚀
             </span>
           </div>
         </div>
