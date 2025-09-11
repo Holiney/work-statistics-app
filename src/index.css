@@ -74,3 +74,6 @@
   --select-item-selected-foreground: 220 14% 95%; /* Light text for selected */
   }
 }
+body {
+  overscroll-behavior-y: contain;
+}
