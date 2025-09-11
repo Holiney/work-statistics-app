@@ -2047,17 +2047,6 @@ const SettingsView = ({
         >
           {t(lang, "vibrationOff")}
         </button>
-        <button
-          onClick={() => {
-            vibrateDevice("buttonPress");
-            if ("vibrate" in navigator) {
-              navigator.vibrate(200);
-            }
-          }}
-          className="w-full p-2 bg-gray-200 dark:bg-gray-700 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition"
-        >
-          Тест вібрації
-        </button>
       </div>
     </div>
   </div>
@@ -2242,7 +2231,7 @@ export default function App() {
         <div className="text-center mt-6 mx-4">
           <div className="flex items-center justify-center gap-2">
             <span className="text-xs text-gray-400 dark:text-gray-500">
-              Work Statistics PWA v1.41 🚀
+              Work Statistics PWA v1.48 🚀
             </span>
           </div>
         </div>
