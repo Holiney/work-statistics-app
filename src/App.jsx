@@ -573,7 +573,7 @@ const BottomSheet = ({ isOpen, onClose, title, children }) => {
           onClose();
         }}
       />
-      <div className="fixed bottom-0 left-0 right-0 bg-[hsl(var(--card))] dark:bg-gray-800 rounded-t-3xl shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div className="fixed inset-0 bg-[hsl(var(--background))] dark:bg-gray-800 h-screen overflow-y-auto">
         <div className="flex justify-center py-3">
           <div className="w-12 h-1.5 bg-gray-300 dark:bg-gray-600 rounded-full" />
         </div>
@@ -716,7 +716,6 @@ const Task1PersonnelCars = ({ lang }) => {
     message: "",
     type: "success",
   });
-  const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
     const todayKey = getTodayKey();
@@ -728,11 +727,15 @@ const Task1PersonnelCars = ({ lang }) => {
 
     setPersonnelData(savedPersonnel);
     setCarsCount(savedCars);
-
-    const hasData =
-      Object.values(savedPersonnel).some((count) => count > 0) || savedCars > 0;
-    setIsSaved(hasData);
   }, []);
+
+  useEffect(() => {
+    const todayKey = getTodayKey();
+    saveToStorage(`task1-personnel-data-${todayKey}`, personnelData);
+    saveToStorage(`task1-cars-data-${todayKey}`, carsCount);
+    vibrateDevice("save");
+    showToast(t(lang, "dataSavedToday"));
+  }, [personnelData, carsCount]);
 
   const showToast = (message, type = "success") => {
     setToast({ show: true, message, type });
@@ -743,35 +746,7 @@ const Task1PersonnelCars = ({ lang }) => {
   };
 
   const updatePersonnel = (zone, count) => {
-    if (!isSaved) {
-      setPersonnelData((prev) => ({ ...prev, [zone]: count }));
-    }
-  };
-
-  const handleSave = () => {
-    const hasPersonnelData = Object.values(personnelData).some(
-      (count) => count > 0
-    );
-    const hasCarsData = carsCount > 0;
-
-    if (!hasPersonnelData && !hasCarsData) {
-      showToast(t(lang, "noDataToSave"), "error");
-      return;
-    }
-
-    const todayKey = getTodayKey();
-    saveToStorage(`task1-personnel-data-${todayKey}`, personnelData);
-    saveToStorage(`task1-cars-data-${todayKey}`, carsCount);
-
-    setIsSaved(true);
-    vibrateDevice("save");
-    showToast(t(lang, "dataSaved"));
-  };
-
-  const handleEdit = () => {
-    setIsSaved(false);
-    vibrateDevice("light");
-    showToast(t(lang, "editMode"));
+    setPersonnelData((prev) => ({ ...prev, [zone]: count }));
   };
 
   const handleCopy = () => {
@@ -822,25 +797,14 @@ const Task1PersonnelCars = ({ lang }) => {
             <button
               key={zone}
               onClick={() => {
-                if (!isSaved) {
-                  vibrateDevice("buttonPress");
-                  setSelectedZone(zone);
-                }
+                vibrateDevice("buttonPress");
+                setSelectedZone(zone);
               }}
-              disabled={isSaved}
-              className={`w-full rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform flex items-center justify-between ${
-                isSaved
-                  ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
-                  : "bg-blue-50 dark:bg-blue-900 hover:bg-blue-100 dark:hover:bg-blue-800 active:bg-blue-200 dark:active:bg-blue-700 text-blue-800 dark:text-blue-200"
-              }`}
+              className={`w-full rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform flex items-center justify-between bg-blue-50 dark:bg-blue-900 hover:bg-blue-100 dark:hover:bg-blue-800 active:bg-blue-200 dark:active:bg-blue-700 text-blue-800 dark:text-blue-200`}
             >
               <span className="font-medium">{zone}</span>
               <span
-                className={`px-3 py-1 rounded-lg text-sm font-bold ${
-                  isSaved
-                    ? "bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400"
-                    : "bg-blue-600 text-white"
-                }`}
+                className={`px-3 py-1 rounded-lg text-sm font-bold bg-blue-600 text-white`}
               >
                 {personnelData[zone] ?? 0}
               </span>
@@ -856,25 +820,14 @@ const Task1PersonnelCars = ({ lang }) => {
         </h2>
         <button
           onClick={() => {
-            if (!isSaved) {
-              vibrateDevice("buttonPress");
-              setSelectedZone("Parking");
-            }
+            vibrateDevice("buttonPress");
+            setSelectedZone("Parking");
           }}
-          disabled={isSaved}
-          className={`w-full rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform flex items-center justify-between ${
-            isSaved
-              ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
-              : "bg-green-50 dark:bg-green-900 hover:bg-green-100 dark:hover:bg-green-800 active:bg-green-200 dark:active:bg-green-700 text-green-800 dark:text-green-200"
-          }`}
+          className={`w-full rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform flex items-center justify-between bg-green-50 dark:bg-green-900 hover:bg-green-100 dark:hover:bg-green-800 active:bg-green-200 dark:active:bg-green-700 text-green-800 dark:text-green-200`}
         >
           <span className="font-medium">{t(lang, "totalCars")}</span>
           <span
-            className={`px-3 py-1 rounded-lg text-sm font-bold ${
-              isSaved
-                ? "bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400"
-                : "bg-green-600 text-white"
-            }`}
+            className={`px-3 py-1 rounded-lg text-sm font-bold bg-green-600 text-white`}
           >
             {carsCount}
           </span>
@@ -882,32 +835,6 @@ const Task1PersonnelCars = ({ lang }) => {
       </div>
 
       <div className="space-y-4">
-        {!isSaved ? (
-          <button
-            onClick={handleSave}
-            className="w-full bg-green-500 hover:bg-green-600 active:bg-green-700 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold flex items-center justify-center gap-2"
-          >
-            <span className="text-xl">💾</span>
-            {t(lang, "save")}
-          </button>
-        ) : (
-          <div className="space-y-3">
-            <div className="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-900 border-l-4 border-green-400 dark:border-green-600 rounded-lg">
-              <span className="text-xl">✅</span>
-              <span className="text-green-800 dark:text-green-200 font-medium">
-                {t(lang, "dataSavedToday")}
-              </span>
-            </div>
-            <button
-              onClick={handleEdit}
-              className="w-full bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold flex items-center justify-center gap-2"
-            >
-              <span className="text-xl">✏️</span>
-              {t(lang, "edit")}
-            </button>
-          </div>
-        )}
-
         <button
           onClick={handleCopy}
           className="w-full bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
@@ -933,7 +860,7 @@ const Task1PersonnelCars = ({ lang }) => {
         ) : selectedZone === "Parking" ? (
           <Counter
             value={carsCount}
-            onChange={(count) => !isSaved && setCarsCount(count)}
+            onChange={(count) => setCarsCount(count)}
             label={t(lang, "carsCount")}
             lang={lang}
             onClose={() => setSelectedZone(null)}
@@ -953,17 +880,23 @@ const Task2BikeParking = ({ lang }) => {
     message: "",
     type: "success",
   });
-  const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
     const todayKey = getTodayKey();
     const savedBikes = loadFromStorage(`task2-bikes-data-${todayKey}`, {});
 
     setBikeData(savedBikes);
-
-    const hasData = Object.values(savedBikes).some((count) => count > 0);
-    setIsSaved(hasData);
   }, []);
+
+  useEffect(() => {
+    const hasData = Object.values(bikeData).some((count) => count > 0);
+    if (hasData) {
+      const todayKey = getTodayKey();
+      saveToStorage(`task2-bikes-data-${todayKey}`, bikeData);
+      vibrateDevice("save");
+      showToast(t(lang, "dataSavedToday"));
+    }
+  }, [bikeData]);
 
   const showToast = (message, type = "success") => {
     setToast({ show: true, message, type });
@@ -974,30 +907,7 @@ const Task2BikeParking = ({ lang }) => {
   };
 
   const updateBike = (type, count) => {
-    if (!isSaved) {
-      setBikeData((prev) => ({ ...prev, [type]: count }));
-    }
-  };
-
-  const handleSave = () => {
-    const hasData = Object.values(bikeData).some((count) => count > 0);
-    if (!hasData) {
-      showToast(t(lang, "noDataToSave"), "error");
-      return;
-    }
-
-    const todayKey = getTodayKey();
-    saveToStorage(`task2-bikes-data-${todayKey}`, bikeData);
-
-    setIsSaved(true);
-    vibrateDevice("save");
-    showToast(t(lang, "dataSaved"));
-  };
-
-  const handleEdit = () => {
-    setIsSaved(false);
-    vibrateDevice("light");
-    showToast(t(lang, "editMode"));
+    setBikeData((prev) => ({ ...prev, [type]: count }));
   };
 
   const handleCopy = () => {
@@ -1043,25 +953,14 @@ const Task2BikeParking = ({ lang }) => {
             <button
               key={type}
               onClick={() => {
-                if (!isSaved) {
-                  vibrateDevice("buttonPress");
-                  setSelectedBikeType(type);
-                }
+                vibrateDevice("buttonPress");
+                setSelectedBikeType(type);
               }}
-              disabled={isSaved}
-              className={`w-full rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform flex items-center justify-between ${
-                isSaved
-                  ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
-                  : "bg-orange-50 dark:bg-orange-900 hover:bg-orange-100 dark:hover:bg-orange-800 active:bg-orange-200 dark:active:bg-orange-700 text-orange-800 dark:text-orange-200"
-              }`}
+              className={`w-full rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform flex items-center justify-between bg-orange-50 dark:bg-orange-900 hover:bg-orange-100 dark:hover:bg-orange-800 active:bg-orange-200 dark:active:bg-orange-700 text-orange-800 dark:text-orange-200`}
             >
               <span className="font-medium text-left">{type}</span>
               <span
-                className={`px-3 py-1 rounded-lg text-sm font-bold ${
-                  isSaved
-                    ? "bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400"
-                    : "bg-orange-600 text-white"
-                }`}
+                className={`px-3 py-1 rounded-lg text-sm font-bold bg-orange-600 text-white`}
               >
                 {bikeData[type] ?? 0}
               </span>
@@ -1071,32 +970,6 @@ const Task2BikeParking = ({ lang }) => {
       </div>
 
       <div className="space-y-4">
-        {!isSaved ? (
-          <button
-            onClick={handleSave}
-            className="w-full bg-green-500 hover:bg-green-600 active:bg-green-700 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold flex items-center justify-center gap-2"
-          >
-            <span className="text-xl">💾</span>
-            {t(lang, "save")}
-          </button>
-        ) : (
-          <div className="space-y-3">
-            <div className="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-900 border-l-4 border-green-400 dark:border-green-600 rounded-lg">
-              <span className="text-xl">✅</span>
-              <span className="text-green-800 dark:text-green-200 font-medium">
-                {t(lang, "dataSavedToday")}
-              </span>
-            </div>
-            <button
-              onClick={handleEdit}
-              className="w-full bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold flex items-center justify-center gap-2"
-            >
-              <span className="text-xl">✏️</span>
-              {t(lang, "edit")}
-            </button>
-          </div>
-        )}
-
         <button
           onClick={handleCopy}
           className="w-full bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
@@ -1135,7 +1008,6 @@ const Task3PrintRooms = ({ lang }) => {
     message: "",
     type: "success",
   });
-  const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
     const todayKey = getTodayKey();
@@ -1143,18 +1015,21 @@ const Task3PrintRooms = ({ lang }) => {
       `task3-data-${todayKey}-${selectedRoom}`,
       {}
     );
-    const hasRoomData = Object.values(currentData).some(
-      (count) =>
-        count > 0 ||
-        (count === 0 &&
-          getOptionsForItem(
-            Object.keys(currentData).find((key) => currentData[key] === 0)
-          )?.includes("–"))
-    );
-
     setPrintData(currentData);
-    setIsSaved(hasRoomData);
   }, [selectedRoom]);
+
+  useEffect(() => {
+    const hasData = Object.entries(printData).some(
+      ([item, count]) =>
+        count > 0 || (count === 0 && getOptionsForItem(item).includes("–"))
+    );
+    if (hasData) {
+      const todayKey = getTodayKey();
+      saveToStorage(`task3-data-${todayKey}-${selectedRoom}`, printData);
+      vibrateDevice("save");
+      showToast(t(lang, "dataSavedToday"));
+    }
+  }, [printData, selectedRoom]);
 
   const showToast = (message, type = "success") => {
     setToast({ show: true, message, type });
@@ -1204,32 +1079,7 @@ const Task3PrintRooms = ({ lang }) => {
   };
 
   const updateItem = (item, count) => {
-    if (!isSaved) {
-      setPrintData((prev) => ({ ...prev, [item]: count }));
-    }
-  };
-
-  const handleSave = () => {
-    const hasData = Object.entries(printData).some(
-      ([item, count]) =>
-        count > 0 || (count === 0 && getOptionsForItem(item).includes("–"))
-    );
-    if (!hasData) {
-      showToast(t(lang, "noDataToSave"), "error");
-      return;
-    }
-
-    const todayKey = getTodayKey();
-    saveToStorage(`task3-data-${todayKey}-${selectedRoom}`, printData);
-    setIsSaved(true);
-    vibrateDevice("save");
-    showToast(t(lang, "dataSaved"));
-  };
-
-  const handleEdit = () => {
-    setIsSaved(false);
-    vibrateDevice("light");
-    showToast(t(lang, "editMode"));
+    setPrintData((prev) => ({ ...prev, [item]: count }));
   };
 
   const handleCopy = () => {
@@ -1298,26 +1148,15 @@ const Task3PrintRooms = ({ lang }) => {
             <button
               key={item}
               onClick={() => {
-                if (!isSaved) {
-                  vibrateDevice("buttonPress");
-                  setSelectedItem(item);
-                }
+                vibrateDevice("buttonPress");
+                setSelectedItem(item);
               }}
-              disabled={isSaved}
-              className={`w-full rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform flex items-center justify-between ${
-                isSaved
-                  ? "bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
-                  : "bg-purple-50 dark:bg-purple-900 hover:bg-purple-100 dark:hover:bg-purple-800 active:bg-purple-200 dark:active:bg-purple-700 text-purple-800 dark:text-purple-200"
-              }`}
+              className={`w-full rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform flex items-center justify-between bg-purple-50 dark:bg-purple-900 hover:bg-purple-100 dark:hover:bg-purple-800 active:bg-purple-200 dark:active:bg-purple-700 text-purple-800 dark:text-purple-200`}
             >
               <span className="font-medium text-left">{item}</span>
               <div className="flex items-center gap-2">
                 <span
-                  className={`px-3 py-1 rounded-lg text-sm font-bold ${
-                    isSaved
-                      ? "bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400"
-                      : "bg-purple-600 text-white"
-                  }`}
+                  className={`px-3 py-1 rounded-lg text-sm font-bold bg-purple-600 text-white`}
                 >
                   {printData[item] ??
                     (getOptionsForItem(item).includes("–") ? "–" : 0)}
@@ -1330,32 +1169,6 @@ const Task3PrintRooms = ({ lang }) => {
       </div>
 
       <div className="space-y-4">
-        {!isSaved ? (
-          <button
-            onClick={handleSave}
-            className="w-full bg-green-500 hover:bg-green-600 active:bg-green-700 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold flex items-center justify-center gap-2"
-          >
-            <span className="text-xl">💾</span>
-            {t(lang, "save")}
-          </button>
-        ) : (
-          <div className="space-y-3">
-            <div className="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-900 border-l-4 border-green-400 dark:border-green-600 rounded-lg">
-              <span className="text-xl">✅</span>
-              <span className="text-green-800 dark:text-green-200 font-medium">
-                {t(lang, "dataSavedToday")}
-              </span>
-            </div>
-            <button
-              onClick={handleEdit}
-              className="w-full bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold flex items-center justify-center gap-2"
-            >
-              <span className="text-xl">✏️</span>
-              {t(lang, "edit")}
-            </button>
-          </div>
-        )}
-
         <button
           onClick={handleCopy}
           className="w-full bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 text-white rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
@@ -2270,7 +2083,7 @@ export default function App() {
         <div className="text-center mt-6 mx-4">
           <div className="flex items-center justify-center gap-2">
             <span className="text-xs text-gray-400 dark:text-gray-500">
-              Work Statistics PWA v4.1.2 🚀
+              Work Statistics PWA v1.63 🚀
             </span>
           </div>
         </div>
