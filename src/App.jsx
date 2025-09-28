@@ -324,16 +324,10 @@ const PRINT_ROOMS = ["50", "140", "162", "220", "250", "340", "422", "463"];
 
 // Vibration patterns
 const VIBRATION_PATTERNS = {
-  light: [25],
-  medium: [50],
-  strong: [100],
-  double: [50, 50, 50],
+  counterIncrease: [20],
+  counterDecrease: [50],
   success: [100, 50, 100],
   error: [200, 100, 200],
-  buttonPress: [30],
-  counterIncrease: [40, 30, 40],
-  counterDecrease: [60],
-  save: [100, 50, 100, 50, 100],
   delete: [200, 100, 200],
 };
 
@@ -458,7 +452,6 @@ const PWAInstallBanner = ({ lang }) => {
     const handleInstalled = () => {
       setIsInstalled(true);
       setShowInstallBanner(false);
-      vibrateDevice("success");
     };
 
     window.addEventListener("pwa-install-available", handleInstallPrompt);
@@ -471,7 +464,6 @@ const PWAInstallBanner = ({ lang }) => {
   }, []);
 
   const handleInstall = () => {
-    vibrateDevice("buttonPress");
     if (window.installPWA) {
       window.installPWA();
     }
@@ -479,7 +471,6 @@ const PWAInstallBanner = ({ lang }) => {
   };
 
   const handleDismiss = () => {
-    vibrateDevice("buttonPress");
     setShowInstallBanner(false);
   };
 
@@ -541,10 +532,7 @@ const Toast = ({ message, isVisible, onClose, type = "success" }) => {
           {emoji} {message}
         </span>
         <button
-          onClick={() => {
-            vibrateDevice("buttonPress");
-            onClose();
-          }}
+          onClick={onClose}
           className="ml-3 p-1 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors"
         >
           ✕
@@ -556,22 +544,13 @@ const Toast = ({ message, isVisible, onClose, type = "success" }) => {
 
 // Bottom Sheet
 const BottomSheet = ({ isOpen, onClose, title, children }) => {
-  useEffect(() => {
-    if (isOpen) {
-      vibrateDevice("light");
-    }
-  }, [isOpen]);
-
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50">
       <div
         className="fixed inset-0 bg-black bg-opacity-30 dark:bg-opacity-50"
-        onClick={() => {
-          vibrateDevice("buttonPress");
-          onClose();
-        }}
+        onClick={onClose}
       />
       <div className="fixed inset-0 bg-[hsl(var(--background))] dark:bg-gray-800 h-screen overflow-y-auto">
         <div className="flex justify-center py-3">
@@ -582,10 +561,7 @@ const BottomSheet = ({ isOpen, onClose, title, children }) => {
             {title}
           </h3>
           <button
-            onClick={() => {
-              vibrateDevice("buttonPress");
-              onClose();
-            }}
+            onClick={onClose}
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition text-2xl"
           >
             ✕
@@ -683,7 +659,6 @@ const NumberGrid = ({ value, onChange, label, onClose, lang, options }) => {
           <button
             key={option}
             onClick={() => {
-              vibrateDevice("buttonPress");
               onChange(option === "–" ? 0 : option);
             }}
             className={`h-12 text-sm font-bold rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
@@ -733,7 +708,6 @@ const Task1PersonnelCars = ({ lang }) => {
     const todayKey = getTodayKey();
     saveToStorage(`task1-personnel-data-${todayKey}`, personnelData);
     saveToStorage(`task1-cars-data-${todayKey}`, carsCount);
-    vibrateDevice("save");
     showToast(t(lang, "dataSavedToday"));
   }, [personnelData, carsCount]);
 
@@ -797,7 +771,6 @@ const Task1PersonnelCars = ({ lang }) => {
             <button
               key={zone}
               onClick={() => {
-                vibrateDevice("buttonPress");
                 setSelectedZone(zone);
               }}
               className={`w-full rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform flex items-center justify-between bg-blue-50 dark:bg-blue-900 hover:bg-blue-100 dark:hover:bg-blue-800 active:bg-blue-200 dark:active:bg-blue-700 text-blue-800 dark:text-blue-200`}
@@ -820,7 +793,6 @@ const Task1PersonnelCars = ({ lang }) => {
         </h2>
         <button
           onClick={() => {
-            vibrateDevice("buttonPress");
             setSelectedZone("Parking");
           }}
           className={`w-full rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform flex items-center justify-between bg-green-50 dark:bg-green-900 hover:bg-green-100 dark:hover:bg-green-800 active:bg-green-200 dark:active:bg-green-700 text-green-800 dark:text-green-200`}
@@ -893,7 +865,6 @@ const Task2BikeParking = ({ lang }) => {
     if (hasData) {
       const todayKey = getTodayKey();
       saveToStorage(`task2-bikes-data-${todayKey}`, bikeData);
-      vibrateDevice("save");
       showToast(t(lang, "dataSavedToday"));
     }
   }, [bikeData]);
@@ -953,7 +924,6 @@ const Task2BikeParking = ({ lang }) => {
             <button
               key={type}
               onClick={() => {
-                vibrateDevice("buttonPress");
                 setSelectedBikeType(type);
               }}
               className={`w-full rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform flex items-center justify-between bg-orange-50 dark:bg-orange-900 hover:bg-orange-100 dark:hover:bg-orange-800 active:bg-orange-200 dark:active:bg-orange-700 text-orange-800 dark:text-orange-200`}
@@ -1026,7 +996,6 @@ const Task3PrintRooms = ({ lang }) => {
     if (hasData) {
       const todayKey = getTodayKey();
       saveToStorage(`task3-data-${todayKey}-${selectedRoom}`, printData);
-      vibrateDevice("save");
       showToast(t(lang, "dataSavedToday"));
     }
   }, [printData, selectedRoom]);
@@ -1129,7 +1098,6 @@ const Task3PrintRooms = ({ lang }) => {
             <button
               key={room}
               onClick={() => {
-                vibrateDevice("buttonPress");
                 setSelectedRoom(room);
               }}
               className={`py-2 px-3 text-sm font-bold rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
@@ -1148,7 +1116,6 @@ const Task3PrintRooms = ({ lang }) => {
             <button
               key={item}
               onClick={() => {
-                vibrateDevice("buttonPress");
                 setSelectedItem(item);
               }}
               className={`w-full rounded-lg shadow transition px-4 py-2 hover:scale-[1.02] active:scale-[0.98] transition-transform flex items-center justify-between bg-purple-50 dark:bg-purple-900 hover:bg-purple-100 dark:hover:bg-purple-800 active:bg-purple-200 dark:active:bg-purple-700 text-purple-800 dark:text-purple-200`}
@@ -1276,7 +1243,6 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
     }
 
     const handleCopy = () => {
-      vibrateDevice("buttonPress");
       const dateStr = new Date(date).toLocaleDateString("uk-UA", {
         day: "2-digit",
         month: "2-digit",
@@ -1380,7 +1346,6 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
         ))}
         <button
           onClick={() => {
-            vibrateDevice("buttonPress");
             const text = `${new Date(date).toLocaleDateString("uk-UA", {
               day: "2-digit",
               month: "2-digit",
@@ -1438,7 +1403,6 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
     });
 
     const handleCopy = () => {
-      vibrateDevice("buttonPress");
       const dateStr = new Date(date).toLocaleDateString("uk-UA", {
         day: "2-digit",
         month: "2-digit",
@@ -1512,10 +1476,7 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <button
-          onClick={() => {
-            vibrateDevice("buttonPress");
-            onBack();
-          }}
+          onClick={onBack}
           className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 active:bg-gray-200 dark:active:bg-gray-600 rounded-lg transition text-2xl"
         >
           ◀
@@ -1533,7 +1494,6 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
       <div className="grid grid-cols-3 gap-3">
         <button
           onClick={() => {
-            vibrateDevice("buttonPress");
             setSelectedTask("task1");
           }}
           className={`p-3 rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
@@ -1549,7 +1509,6 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
         </button>
         <button
           onClick={() => {
-            vibrateDevice("buttonPress");
             setSelectedTask("task2");
           }}
           className={`p-3 rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
@@ -1565,7 +1524,6 @@ const HistoryDetailView = ({ date, onBack, lang }) => {
         </button>
         <button
           onClick={() => {
-            vibrateDevice("buttonPress");
             setSelectedTask("task3");
           }}
           className={`p-3 rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform ${
@@ -1614,7 +1572,6 @@ const HistoryView = ({ lang }) => {
   };
 
   const handleDeleteDate = (date) => {
-    vibrateDevice("buttonPress");
     if (
       window.confirm(`${t(lang, "deleteConfirm")} ${formatDate(date, lang)}?`)
     ) {
@@ -1698,7 +1655,6 @@ const HistoryView = ({ lang }) => {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => {
-                      vibrateDevice("buttonPress");
                       setSelectedDate(date);
                     }}
                     className="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 text-white rounded-lg shadow transition hover:scale-[1.02] active:scale-[0.98] transition-transform font-medium flex items-center gap-2"
@@ -1746,7 +1702,6 @@ const SettingsView = ({
           <select
             value={lang}
             onChange={(e) => {
-              vibrateDevice("buttonPress");
               setLang(e.target.value);
             }}
             className="w-full p-3 rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--card))] text-[hsl(var(--foreground))] appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[hsl(var(--primary))] transition-all"
@@ -1774,7 +1729,6 @@ const SettingsView = ({
         <div className="flex gap-2 p-1 bg-[hsl(var(--muted))] rounded-lg">
           <button
             onClick={() => {
-              vibrateDevice("buttonPress");
               setTheme("light");
             }}
             className={`w-1/3 p-2 rounded-md font-medium transition-all ${
@@ -1787,7 +1741,6 @@ const SettingsView = ({
           </button>
           <button
             onClick={() => {
-              vibrateDevice("buttonPress");
               setTheme("dark");
             }}
             className={`w-1/3 p-2 rounded-md font-medium transition-all ${
@@ -1800,7 +1753,6 @@ const SettingsView = ({
           </button>
           <button
             onClick={() => {
-              vibrateDevice("buttonPress");
               setTheme("purple");
             }}
             className={`w-1/3 p-2 rounded-md font-medium transition-all ${
@@ -1821,7 +1773,6 @@ const SettingsView = ({
         <div className="flex gap-2 p-1 bg-[hsl(var(--muted))] rounded-lg">
           <button
             onClick={() => {
-              vibrateDevice("buttonPress");
               setVibrationEnabled(true);
             }}
             className={`w-1/2 p-2 rounded-md font-medium transition-all ${
@@ -1834,7 +1785,6 @@ const SettingsView = ({
           </button>
           <button
             onClick={() => {
-              vibrateDevice("buttonPress");
               setVibrationEnabled(false);
             }}
             className={`w-1/2 p-2 rounded-md font-medium transition-all ${
@@ -1957,7 +1907,6 @@ export default function App() {
   }, []);
 
   const handleTaskChange = (task) => {
-    vibrateDevice("buttonPress");
     setCurrentTask(task);
 
     // Update URL for shortcuts
@@ -2083,7 +2032,7 @@ export default function App() {
         <div className="text-center mt-6 mx-4">
           <div className="flex items-center justify-center gap-2">
             <span className="text-xs text-gray-400 dark:text-gray-500">
-              Work Statistics PWA v1.63 🚀
+              Work Statistics PWA v1.65 🚀
             </span>
           </div>
         </div>
